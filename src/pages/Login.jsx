@@ -1,306 +1,79 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  EnvelopeIcon,
-  LockClosedIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  AcademicCapIcon,
-  ArrowRightOnRectangleIcon,
-  CheckCircleIcon,
-} from "@heroicons/react/24/outline";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { AcademicCapIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../context/AuthContext";
+import Input from "../component/common/Input";
 import Button from "../component/common/Button";
 
 export default function Login() {
-  const [role, setRole] = useState("student"); // "student" | "teacher"
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
-
-  const handleChange = (e) => {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    setFormData({ ...formData, [e.target.name]: value });
-  };
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState("student");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting login:", { ...formData, role });
+    if (!email || !password) return;
+    login(email, password, selectedRole);
+    navigate(selectedRole === "admin" ? "/admin" : "/dashboard");
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans">
-      {/* ---------------- LEFT SIDE: VISUAL BANNER ---------------- */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-12 text-white lg:flex">
-        {/* Ambient Glow Effects */}
-        <div className="pointer-events-none absolute -top-20 -start-20 h-96 w-96 rounded-full bg-blue-600/20 blur-[100px]" />
-        <div className="pointer-events-none absolute -bottom-20 -end-20 h-96 w-96 rounded-full bg-emerald-500/20 blur-[100px]" />
-
-        {/* Brand Logo */}
-        <Link to="/" className="relative z-10 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-600/20 border border-blue-500/30 backdrop-blur-md">
-            <AcademicCapIcon className="h-6 w-6 text-blue-400" />
-          </div>
-          <span className="font-display text-2xl font-black tracking-wide text-white">
-            أكاديمي
-          </span>
-        </Link>
-
-        {/* Dynamic Quote & Highlights */}
-        <div className="relative z-10 my-auto max-w-lg">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={role}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="font-display text-3xl font-bold leading-relaxed text-white lg:text-4xl">
-                {role === "student" ? (
-                  <>
-                    "مرحباً بعودتك!{" "}
-                    <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
-                      واصل مسيرتك التعليمية
-                    </span>"
-                  </>
-                ) : (
-                  <>
-                    "أهلاً بك مجدداً!{" "}
-                    <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                      طلابك بانتظار جلساتك
-                    </span>"
-                  </>
-                )}
-              </h2>
-
-              <div className="mt-8 space-y-3">
-                {role === "student" ? (
-                  <>
-                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                      <CheckCircleIcon className="h-5 w-5 text-emerald-400" />
-                      <span>تابع دروسك وجداولك الأسبوعية المباشرة</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                      <CheckCircleIcon className="h-5 w-5 text-emerald-400" />
-                      <span>تواصل المباشر مع أساتذتك بكل سهولة</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                      <CheckCircleIcon className="h-5 w-5 text-emerald-400" />
-                      <span>إدارة المجموعات ومواعيد الجلسات القادمة</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-slate-300">
-                      <CheckCircleIcon className="h-5 w-5 text-emerald-400" />
-                      <span>متابعة حضور وتقييمات الطلاب</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Floating Status Box */}
-          <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400">
-                <ArrowRightOnRectangleIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-white">تسجيل دخول آمن</p>
-                <p className="text-xs text-slate-400">بياناتك وحسابك محمي بأعلى معايير الأمان</p>
-              </div>
-            </div>
-          </div>
+    <div className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: "var(--bg)" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-sm"
+      >
+        <div className="mb-8 text-center">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <AcademicCapIcon className="h-8 w-8" style={{ color: "var(--accent)" }} />
+            <span className="font-display text-xl font-bold" style={{ color: "var(--text-primary)" }}>أكاديمي</span>
+          </Link>
         </div>
 
-        {/* Footer */}
-        <p className="relative z-10 text-xs text-slate-500">
-          أكاديمي © {new Date().getFullYear()} — جميع الحقوق محفوظة
-        </p>
-      </div>
+        <div className="rounded-2xl border p-6 backdrop-blur-sm" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+          <h2 className="font-display text-xl font-bold" style={{ color: "var(--text-primary)" }}>تسجيل الدخول</h2>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>أدخل بياناتك للدخول</p>
 
-      {/* ---------------- RIGHT SIDE: LOGIN FORM ---------------- */}
-      <div className="flex w-full items-center justify-center p-6 sm:p-12 lg:w-1/2">
-        <div className="w-full max-w-md space-y-8">
-          
-          {/* Header */}
-          <div className="text-center">
-            <h1 className="font-display text-3xl font-black text-slate-900">
-              تسجيل الدخول
-            </h1>
-            <p className="mt-2 text-sm text-slate-600">
-              ليس لديك حساب؟{" "}
-              <Link
-                to="/register"
-                className="font-bold text-blue-600 hover:text-blue-700 hover:underline"
-              >
-                أنشئ حساباً جديداً
-              </Link>
-            </p>
-          </div>
-
-          {/* Role Switcher */}
-          <div className="relative flex rounded-2xl bg-slate-200/70 p-1.5 shadow-inner">
-            <button
-              type="button"
-              onClick={() => setRole("student")}
-              className={`relative z-10 flex-1 py-2.5 text-sm font-bold transition-colors ${
-                role === "student" ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              طالب
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("instructor")}
-              className={`relative z-10 flex-1 py-2.5 text-sm font-bold transition-colors ${
-                role === "instructor" ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              مدرس
-            </button>
-
-            {/* Sliding Pill */}
-            <motion.div
-              className="absolute inset-y-1.5 rounded-xl bg-white shadow-md"
-              initial={false}
-              animate={{
-                x: role === "student" ? "0%" : "100%",
-                width: "48%",
-              }}
-              transition={{ type: "spring", stiffness: 400, damping: 35 }}
-            />
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            
-            {/* Email Address */}
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1.5">
-                البريد الإلكتروني
-              </label>
-              <div className="relative">
-                <EnvelopeIcon className="pointer-events-none absolute start-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder="example@email.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pe-4 ps-11 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-bold text-slate-700">
-                  كلمة المرور
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  نسيت كلمة المرور؟
-                </Link>
-              </div>
-              <div className="relative">
-                <LockClosedIcon className="pointer-events-none absolute start-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  required
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pe-11 ps-11 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
-                />
+          <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+            <div className="flex gap-2">
+              {["student", "instructor", "admin"].map((r) => (
                 <button
+                  key={r}
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute end-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  onClick={() => setSelectedRole(r)}
+                  className="flex-1 rounded-lg border px-3 py-2 text-xs font-semibold transition-all"
+                  style={{
+                    borderColor: selectedRole === r ? "var(--accent)" : "var(--border)",
+                    backgroundColor: selectedRole === r ? "var(--accent)" : "transparent",
+                    color: selectedRole === r ? "#fff" : "var(--text-secondary)",
+                  }}
                 >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
+                  {r === "student" ? "طالب" : r === "instructor" ? "معلم" : "مدير"}
                 </button>
-              </div>
+              ))}
             </div>
 
-            {/* Remember Me Checkbox */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                name="rememberMe"
-                checked={formData.rememberMe}
-                onChange={handleChange}
-                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="rememberMe" className="text-sm font-medium text-slate-600 cursor-pointer">
-                تذكرني على هذا الجهاز
-              </label>
-            </div>
+            <Input name="email" type="email" placeholder="البريد الإلكتروني" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input name="password" type="password" placeholder="كلمة المرور" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full py-3.5 shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30"
-            >
-              تسجيل الدخول كـ {role === "student" ? "طالب" : "مدرس"}
+            <Button type="submit" className="w-full">
+              دخول
             </Button>
           </form>
 
-          {/* Social Divider */}
-          <div className="relative my-6 text-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
-            </div>
-            <span className="relative bg-slate-50 px-4 text-xs font-semibold text-slate-400">
-              أو سجّل الدخول بواسطة
-            </span>
-          </div>
-
-          {/* Google Quick Login */}
-          <button
-            type="button"
-            className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.24v3.15C3.26 21.37 7.37 24 12 24z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.28 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.24C.45 8.19 0 9.99 0 12s.45 3.81 1.24 5.39l4.04-3.15z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.26 2.63 1.24 6.61l4.04 3.15c.95-2.85 3.6-4.96 6.72-4.96z"
-              />
-            </svg>
-            <span>متابعة باستخدام Google</span>
-          </button>
-
+          <p className="mt-4 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
+            ليس لديك حساب؟{" "}
+            <Link to="/register" className="font-semibold hover:underline" style={{ color: "var(--accent-text)" }}>
+              سجّل الآن
+            </Link>
+          </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,110 +1,97 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext";
-import Button from "./Button";
- 
-export default function MobileDrawer({ open, onClose, links, roleConfig }) {
+
+const ROLE_MENU = {
+  student: { label: "لوحة التكم", to: "/dashboard" },
+  instructor: { label: "لوحة المعلم", to: "/instructor/dashboard" },
+  admin: { label: "لوحة الإدارة", to: "/admin" },
+};
+
+export default function MobileDrawer({ open, onClose, links }) {
   const { role, user, logout } = useAuth();
-  // الدرور دائماً على جهة "end": يمين في RTL، يسار في LTR.
-  // حركة x الفيزيائية لازم تنعكس حسب الاتجاه لأنها مش logical property
-  const isRTL = typeof document !== "undefined" && document.documentElement.dir === "rtl";
-  const offscreenX = isRTL ? "-100%" : "100%";
- 
+  const roleConfig = ROLE_MENU[role];
+
+  if (!open) return null;
+
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          {/* الخلفية المظللة */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/40 md:hidden"
-          />
- 
-          {/* الدرور نفسه — inset-inline-end يجعله يخرج من اليمين في RTL
-              ومن اليسار تلقائياً في LTR بدون أي شرط إضافي */}
-          <motion.aside
-            initial={{ x: offscreenX }}
-            animate={{ x: 0 }}
-            exit={{ x: offscreenX }}
-            transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-0 end-0 z-50 h-full w-72 bg-white shadow-xl md:hidden"
-          >
-            <div className="flex items-center justify-between border-b border-gray-100 p-4">
-              <span className="font-bold text-gray-800">القائمة</span>
-              <button
+    <>
+      <div
+        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div
+        className="fixed inset-y-0 start-0 z-50 w-72 overflow-y-auto border-l p-6 shadow-xl"
+        style={{ backgroundColor: "var(--bg-secondary)", borderColor: "var(--border)" }}
+      >
+        <div className="mb-8 flex items-center justify-between">
+          <span className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>القائمة</span>
+          <button onClick={onClose} style={{ color: "var(--text-muted)" }}>
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
+
+        <ul className="flex flex-col gap-1">
+          {links.map((link) => (
+            <li key={link.to}>
+              <NavLink
+                to={link.to}
                 onClick={onClose}
-                aria-label="إغلاق القائمة"
-                className="rounded-lg p-1.5 hover:bg-gray-100"
+                className={({ isActive }) =>
+                  `block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-[var(--accent)]/10 text-[var(--accent-text)]"
+                      : "text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                  }`
+                }
               >
-                <XMarkIcon className="h-5 w-5" />
+                {link.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-6 border-t pt-6" style={{ borderColor: "var(--border)" }}>
+          {role === "guest" ? (
+            <div className="flex flex-col gap-3">
+              <NavLink
+                to="/login"
+                onClick={onClose}
+                className="rounded-lg border px-4 py-2 text-center text-sm font-medium transition-colors"
+                style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
+              >
+                تسجيل الدخول
+              </NavLink>
+              <NavLink
+                to="/register"
+                onClick={onClose}
+                className="rounded-lg px-4 py-2 text-center text-sm font-medium text-white"
+                style={{ backgroundColor: "var(--accent)" }}
+              >
+                سجل الآن
+              </NavLink>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {roleConfig && (
+                <NavLink
+                  to={roleConfig.to}
+                  onClick={onClose}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--accent-text)] hover:bg-[var(--surface-hover)]"
+                >
+                  {roleConfig.label}
+                </NavLink>
+              )}
+              <button
+                onClick={() => { logout(); onClose(); }}
+                className="rounded-lg px-3 py-2 text-start text-sm font-medium text-red-500 hover:bg-[var(--surface-hover)]"
+              >
+                تسجيل الخروج ({user?.name})
               </button>
             </div>
- 
-            <nav className="flex flex-col gap-1 p-4">
-              {links.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={onClose}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
- 
-            <div className="mt-2 border-t border-gray-100 p-4">
-              {role === "guest" ? (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    to="/login"
-                    onClick={onClose}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-800"
-                  >
-                    تسجيل الدخول
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={onClose}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white"
-                  >
-                    سجل الآن
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-1">
-                  <p className="px-3 py-1 text-sm font-semibold text-gray-500">
-                    {user?.name}
-                  </p>
-                  {roleConfig.items.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={onClose}
-                      className="rounded-lg px-3 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                  <button
-                    onClick={() => {
-                      logout();
-                      onClose();
-                    }}
-                    className="rounded-lg px-3 py-2 text-start text-sm text-red-600 hover:bg-gray-50"
-                  >
-                    تسجيل الخروج
-                  </button>
-                </div>
-              )}
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

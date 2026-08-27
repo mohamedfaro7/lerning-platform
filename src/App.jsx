@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import PublicLayout from "./component/common/layout/PublicLayout";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -8,47 +9,49 @@ import Register from "./pages/Register";
 import Login from "./pages/Login"; 
 import DashboardRoute from "./component/common/DashboardRoute";
 import DashboardHome from "./pages/dashboard/DashboardHome";
+import InstructorSchedule from "./pages/dashboard/InstructorSchedule";
+import InstructorStudents from "./pages/dashboard/InstructorStudents";
 import AdminRoute from "./component/common/AdminRoute";
 import Courses from "./pages/Courses";
-// Admin Sub-Views (Placeholders or imports)
-const AdminCourses = () => <div className="p-4 bg-white rounded-xl shadow">إدارة الكورسات</div>;
-const AdminInstructors = () => <div className="p-4 bg-white rounded-xl shadow">إدارة المدرسين</div>;
-const AdminStudents = () => <div className="p-4 bg-white rounded-xl shadow">إدارة الطلاب</div>;
-const AdminSettings = () => <div className="p-4 bg-white rounded-xl shadow">إعدادات النظام</div>;
+
+const AdminCourses = () => <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">إدارة الكورسات</div>;
+const AdminInstructors = () => <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">إدارة المدرسين</div>;
+const AdminStudents = () => <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">إدارة الطلاب</div>;
+const AdminSettings = () => <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">إعدادات النظام</div>;
+
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Pages with Navbar & Footer */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/courses" element={<Courses />} />
-          </Route> 
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/courses" element={<Courses />} />
+            </Route> 
 
-          {/* Standalone Auth Pages (No Navbar/Footer) */}
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
 
-          {/* Protected Dashboard Routes */}
-          <Route path="/dashboard" element={<DashboardRoute />}>
-            <Route index element={<DashboardHome />} />
-            <Route path="courses" element={<div>الكورسات</div>} />
-            <Route path="students" element={<div>الطلاب</div>} />
-            <Route path="schedule" element={<div>الجدول</div>} />
-          </Route>
-{/* Admin Protected Routes */}
-      <Route path="/admin" element={<AdminRoute />}>
-        <Route index element={<DashboardHome />} />
-        <Route path="courses" element={<AdminCourses />} />
-        <Route path="instructors" element={<AdminInstructors />} />
-        <Route path="students" element={<AdminStudents />} />
-        <Route path="settings" element={<AdminSettings />} />
-        </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route path="/dashboard" element={<DashboardRoute />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="courses" element={<div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">الكورسات</div>} />
+              <Route path="students" element={<InstructorStudents />} />
+              <Route path="schedule" element={<InstructorSchedule />} />
+            </Route>
+
+            <Route path="/admin" element={<AdminRoute />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="courses" element={<AdminCourses />} />
+              <Route path="instructors" element={<AdminInstructors />} />
+              <Route path="students" element={<AdminStudents />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

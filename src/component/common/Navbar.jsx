@@ -12,6 +12,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import MobileDrawer from "./MobileDrawer";
 import Button from "./Button";
+import ThemeToggle from "./ThemeToggle";
 
 const PUBLIC_LINKS = [
   { to: "/", label: "الرئيسية" },
@@ -20,7 +21,6 @@ const PUBLIC_LINKS = [
   { to: "/contact", label: "اتصل بنا" },
 ];
 
-// أيقونة ونص القائمة المنسدلة يختلفان حسب الدور
 const ROLE_MENU = {
   student: {
     icon: UserCircleIcon,
@@ -54,14 +54,12 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // تصغير الـ Navbar وتفعيل الخلفية شبه الشفافة عند التمرير
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // إغلاق القائمة المنسدلة عند الضغط خارجها
   useEffect(() => {
     const onClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -83,26 +81,27 @@ export default function Navbar() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`sticky top-0 z-40 w-full transition-all duration-300 ${
           scrolled
-            ? "bg-white/90 backdrop-blur shadow-sm py-2"
-            : "bg-white/60 py-4"
+            ? "shadow-lg backdrop-blur-xl py-2"
+            : "backdrop-blur-md py-4"
         }`}
+        style={{
+          backgroundColor: scrolled ? "var(--nav-bg-scroll)" : "var(--nav-bg)",
+        }}
       >
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4">
-          {/* الشعار */}
-          <Link to="/" className="flex items-center gap-2 text-gray-800">
-            <AcademicCapIcon className="h-7 w-7 text-blue-600" />
+          <Link to="/" className="flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+            <AcademicCapIcon className="h-7 w-7" style={{ color: "var(--accent)" }} />
             <span className="text-lg font-bold">أكاديمي</span>
           </Link>
 
-          {/* روابط سطح المكتب */}
           <ul className="hidden items-center gap-6 md:flex">
             {PUBLIC_LINKS.map((link) => (
               <li key={link.to}>
                 <NavLink
                   to={link.to}
                   className={({ isActive }) =>
-                    `text-sm font-medium transition-colors hover:text-blue-600 ${
-                      isActive ? "text-blue-600" : "text-gray-800"
+                    `text-sm font-medium transition-colors ${
+                      isActive ? "text-[var(--accent-text)]" : "text-[var(--text-secondary)] hover:text-[var(--accent-text)]"
                     }`
                   }
                 >
@@ -112,19 +111,22 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* منطقة الأزرار / حساب المستخدم */}
           <div className="hidden items-center gap-3 md:flex">
+            <ThemeToggle />
+
             {role === "guest" ? (
               <>
                 <Link
                   to="/login"
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 transition hover:border-blue-600 hover:text-blue-600"
+                  className="rounded-lg border px-4 py-2 text-sm font-medium transition-all hover:border-[var(--accent)] hover:text-[var(--accent-text)]"
+                  style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
                 >
                   تسجيل الدخول
                 </Link>
                 <Link
                   to="/register"
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-white transition-all hover:brightness-110"
+                  style={{ backgroundColor: "var(--accent)" }}
                 >
                   سجل الآن
                 </Link>
@@ -133,33 +135,36 @@ export default function Navbar() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
-                  className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                  className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium transition-colors hover:bg-[var(--surface-hover)]"
+                  style={{ color: "var(--text-primary)" }}
                 >
-                 {IconComponent && <IconComponent className="h-6 w-6 text-blue-600" />}
+                 {IconComponent && <IconComponent className="h-6 w-6" style={{ color: "var(--accent)" }} />}
                   <span>{user?.name}</span>
                   <ChevronDownIcon
                     className={`h-4 w-4 transition-transform ${menuOpen ? "rotate-180" : ""}`}
+                    style={{ color: "var(--text-muted)" }}
                   />
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute end-0 mt-2 w-48 rounded-lg border border-gray-100 bg-white py-1 shadow-lg">
+                  <div
+                    className="absolute end-0 mt-2 w-48 rounded-lg border py-1 shadow-xl"
+                    style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-secondary)" }}
+                  >
                     {roleConfig.items.map((item) => (
                       <Link
                         key={item.to}
                         to={item.to}
                         onClick={() => setMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        className="block px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-hover)]"
+                        style={{ color: "var(--text-secondary)" }}
                       >
                         {item.label}
                       </Link>
                     ))}
                     <button
-                      onClick={() => {
-                        logout();
-                        setMenuOpen(false);
-                      }}
-                      className="block w-full px-4 py-2 text-start text-sm text-red-600 hover:bg-gray-50"
+                      onClick={() => { logout(); setMenuOpen(false); }}
+                      className="block w-full px-4 py-2 text-start text-sm text-red-500 hover:bg-[var(--surface-hover)]"
                     >
                       تسجيل الخروج
                     </button>
@@ -169,14 +174,17 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* زر القائمة للجوال */}
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="rounded-lg p-2 text-gray-800 hover:bg-gray-100 md:hidden"
-            aria-label="فتح القائمة"
-          >
-            <Bars3Icon className="h-6 w-6" />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="rounded-lg p-2 transition-colors hover:bg-[var(--surface-hover)]"
+              style={{ color: "var(--text-primary)" }}
+              aria-label="فتح القائمة"
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+          </div>
         </nav>
       </motion.header>
 
