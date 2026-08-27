@@ -1,17 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useAuth } from "../../context/AuthContext";
-
-const ROLE_MENU = {
-  student: { label: "لوحة التكم", to: "/dashboard" },
-  instructor: { label: "لوحة المعلم", to: "/instructor/dashboard" },
-  admin: { label: "لوحة الإدارة", to: "/admin" },
-};
 
 export default function MobileDrawer({ open, onClose, links }) {
-  const { role, user, logout } = useAuth();
-  const roleConfig = ROLE_MENU[role];
-
   if (!open) return null;
 
   return (
@@ -52,44 +42,24 @@ export default function MobileDrawer({ open, onClose, links }) {
         </ul>
 
         <div className="mt-6 border-t pt-6" style={{ borderColor: "var(--border)" }}>
-          {role === "guest" ? (
-            <div className="flex flex-col gap-3">
-              <NavLink
-                to="/login"
-                onClick={onClose}
-                className="rounded-lg border px-4 py-2 text-center text-sm font-medium transition-colors"
-                style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
-              >
-                تسجيل الدخول
-              </NavLink>
-              <NavLink
-                to="/register"
-                onClick={onClose}
-                className="rounded-lg px-4 py-2 text-center text-sm font-medium text-white"
-                style={{ backgroundColor: "var(--accent)" }}
-              >
-                سجل الآن
-              </NavLink>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {roleConfig && (
-                <NavLink
-                  to={roleConfig.to}
-                  onClick={onClose}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--accent-text)] hover:bg-[var(--surface-hover)]"
-                >
-                  {roleConfig.label}
-                </NavLink>
-              )}
-              <button
-                onClick={() => { logout(); onClose(); }}
-                className="rounded-lg px-3 py-2 text-start text-sm font-medium text-red-500 hover:bg-[var(--surface-hover)]"
-              >
-                تسجيل الخروج ({user?.name})
-              </button>
-            </div>
-          )}
+          <div className="flex flex-col gap-3">
+            <NavLink
+              to="/login"
+              onClick={onClose}
+              className="rounded-lg border px-4 py-2 text-center text-sm font-medium transition-colors"
+              style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
+            >
+              تسجيل الدخول
+            </NavLink>
+            <NavLink
+              to="/register"
+              onClick={onClose}
+              className="rounded-lg px-4 py-2 text-center text-sm font-medium text-white"
+              style={{ backgroundColor: "var(--accent)" }}
+            >
+              سجل الآن
+            </NavLink>
+          </div>
         </div>
       </div>
     </>

@@ -1,54 +1,51 @@
-/*import { createContext, useContext, useState } from "react";
- 
-// الأدوار الممكنة: "guest" | "student" | "instructor" | "admin"
-const AuthContext = createContext(null);
- 
-const MOCK_USERS = {
-  guest: null,
-  student: { name: "سارة أحمد", role: "student", avatar: null },
-  instructor: { name: "أ. كريم بن علي", role: "instructor", avatar: null },
-  admin: { name: "المشرف العام", role: "admin", avatar: null },
-};
- 
-export function AuthProvider({ children }) {
-  // غيّر المفتاح هنا يدوياً أثناء التطوير لتجربة كل حالة: guest / student / instructor / admin
-  const [user, setUser] = useState(MOCK_USERS.guest);
- 
-  const login = (role = "student") => setUser(MOCK_USERS[role]);
-  const logout = () => setUser(null);
- 
-  const value = {
-    user,
-    role: user?.role || "guest",
-    isAuthenticated: Boolean(user),
-    login,
-    logout,
-  };
- 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
- 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth يجب أن يُستخدم داخل AuthProvider");
-  return ctx;
-}*/
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
 
+export const ROLES = [
+  { key: "applicant", label: "المتقدم", description: "شخص قدم على وظيفة" },
+  { key: "technical_manager", label: "مدير تقني", description: "إدارة الأقسام التقنية" },
+  { key: "track_head", label: "رئيس مسار", description: "قيادة مسار تعليمي" },
+  { key: "academic_reviewer", label: "مراجع أكاديمي", description: "مراجعة المحتوى الأكاديمي" },
+  { key: "ops_planner", label: "مخطط عمليات", description: "التخطيط التشغيلي" },
+  { key: "quality_reviewer", label: "مراجع جودة", description: "مراجعة جودة المحتوى" },
+  { key: "admin", label: "المشرف العام", description: "إدارة النظام بالكامل" },
+];
 
 export function AuthProvider({ children }) {
- const [user, setUser] = useState(null); // null = guest
-  const login = (role = "student") => setUser({ name: "مستخدم تجريبي", role });
-  const logout = () => setUser(null);
+  const [user, setUser] = useState(null);
+  const [pendingApplication, setPendingApplication] = useState(null);
+
+  const login = (email, password, role = "student") => {
+    setUser({
+      name: email.split("@")[0],
+      email,
+      role,
+    });
+  };
+
+  const register = (name, email, password, role = "applicant") => {
+    setUser({
+      name,
+      email,
+      role,
+    });
+  };
+
+  const logout = () => {
+    setUser(null);
+    setPendingApplication(null);
+  };
 
   const value = {
     user,
     role: user?.role || "guest",
     isAuthenticated: Boolean(user),
-    setUser,   // ← هذا هو المهم لصفحة Register يلي بعتها
+    pendingApplication,
+    setPendingApplication,
+    setUser,
     login,
+    register,
     logout,
   };
 
