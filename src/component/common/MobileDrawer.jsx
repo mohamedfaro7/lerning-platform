@@ -1,19 +1,24 @@
 import { NavLink } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function MobileDrawer({ open, onClose, links }) {
+// 👇 استقبل prop جديد اسمه onJobsClick
+export default function MobileDrawer({ open, onClose, links, onJobsClick }) {
   if (!open) return null;
 
   return (
     <>
+      {/* الخلفية المعتمة */}
       <div
         className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
+
+      {/* القائمة الجانبية */}
       <div
         className="fixed inset-y-0 start-0 z-50 w-72 overflow-y-auto border-l p-6 shadow-xl"
         style={{ backgroundColor: "var(--bg-secondary)", borderColor: "var(--border)" }}
       >
+        {/* رأس القائمة (العنوان وزر الإغلاق) */}
         <div className="mb-8 flex items-center justify-between">
           <span className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>القائمة</span>
           <button onClick={onClose} style={{ color: "var(--text-muted)" }}>
@@ -21,26 +26,48 @@ export default function MobileDrawer({ open, onClose, links }) {
           </button>
         </div>
 
+        {/* الروابط */}
         <ul className="flex flex-col gap-1">
-          {links.map((link) => (
-            <li key={link.to}>
-              <NavLink
-                to={link.to}
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[var(--accent)]/10 text-[var(--accent-text)]"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
+          {links.map((link) => {
+            // 👇 لو الرابط هو "وظائف"، نستخدم زر مع onClick مخصص
+            if (link.to === "/jobs") {
+              return (
+                <li key={link.to}>
+                  <button
+                    onClick={() => {
+                      onJobsClick(); // 👈 ننفذ الدالة اللي جاية من الأب (Navbar)
+                      onClose();     // نقفل القائمة بعد الضغط
+                    }}
+                    className="block w-full rounded-lg px-3 py-2 text-right text-sm font-medium transition-colors text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              );
+            }
+
+            // 👇 باقي الروابط (تكون NavLink عادي)
+            return (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-[var(--accent)]/10 text-[var(--accent-text)]"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                    }`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            );
+          })}
         </ul>
 
+        {/* أزرار تسجيل الدخول وإنشاء حساب (في أسفل القائمة) */}
         <div className="mt-6 border-t pt-6" style={{ borderColor: "var(--border)" }}>
           <div className="flex flex-col gap-3">
             <NavLink

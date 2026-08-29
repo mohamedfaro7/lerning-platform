@@ -3,58 +3,74 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   UserIcon,
   BriefcaseIcon,
-  AcademicCapIcon,
-  PaperAirplaneIcon,
+  CloudArrowUpIcon,
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  DocumentIcon,
+  PhotoIcon,
+  IdentificationIcon,
 } from "@heroicons/react/24/outline";
 import Input from "../../component/common/Input";
-import Button from "../../component/common/Button";
 import { useAuth } from "../../context/AuthContext";
 import { useSidebar } from "../../component/common/layout/JobsLayout";
 
-const POSITIONS = [
-  { id: "technical_manager", title: "مدير تقني", dept: "الهندسة", color: "#3b82f6" },
-  { id: "track_head", title: "رئيس مسار برمجي", dept: "التعليم", color: "#a855f7" },
-  { id: "academic_reviewer", title: "مراجع أكاديمي", dept: "المحتوى", color: "#06b6d4" },
-  { id: "ops_planner", title: "مخطط عمليات", dept: "العمليات", color: "#10b981" },
-  { id: "quality_reviewer", title: "مراجع جودة", dept: "المحتوى", color: "#f59e0b" },
-  { id: "admin", title: "المشرف العام", dept: "الإدارة", color: "#ef4444" },
-];
-
+// تعريف الخطوات الجديدة (بقينا ٣ خطوات بس)
 const STEPS = [
-  { key: "personal", icon: UserIcon, label: "البيانات الشخصية" },
-  { key: "position", icon: BriefcaseIcon, label: "اختر الوظيفة" },
-  { key: "experience", icon: AcademicCapIcon, label: "الخبرات" },
-  { key: "review", icon: PaperAirplaneIcon, label: "المراجعة والإرسال" },
+  { key: "personal", icon: UserIcon, label: "البيانات والوظيفة" },
+  { key: "upload", icon: CloudArrowUpIcon, label: "رفع الملفات والإقرار" },
+  { key: "review", icon: CheckCircleIcon, label: "المراجعة النهائية" },
 ];
 
 export default function JobsApply() {
+  // ١. جلب بيانات المستخدم والوظيفة المختارة من الـ Context
   const { user, pendingApplication } = useAuth();
+  
+  // ٢. حالة الخطوات والشاشات
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: "",
-    position: pendingApplication?.role || "",
-    experience: "",
-    education: "",
-    why: "",
-  });
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  // ٣. حالات رفع الملفات (كل ملف له State لوحده)
+  const [cvFile, setCvFile] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [idFrontFile, setIdFrontFile] = useState(null);
+  const [idBackFile, setIdBackFile] = useState(null);
+
+  // ٤. حالة الـ Checkbox (الموافقة على صحة البيانات)
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // ٥. دوال الانتقال بين الخطوات
+  const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  const prev = () => setStep((s) => Math.max(s - 1, 0));
+
+  // ٦. دوال رفع الملفات (بتخزن الـ File Object في الـ State)
+  const handleFileChange = (e, setFile) => {
+    const file = e.target.files[0];
+    if (file) setFile(file);
   };
 
-  const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
-  const prev = () => setForm((s) => Math.max(s - 1, 0));
-
+  // ٧. دالة الإرسال النهائية (هتلم كل حاجة)
   const handleSubmit = () => {
+    // تجميع البيانات النهائية (النصوص + الملفات)
+    const finalData = {
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "غير مضاف",
+      position: pendingApplication?.title || "غير محدد",
+      cv: cvFile,
+      photo: photoFile,
+      idFront: idFrontFile,
+      idBack: idBackFile,
+      isConfirmed: isConfirmed,
+    };
+
+    console.log("✅ البيانات النهائية المرسلة:", finalData);
+
+    // هنعمل هنا After successful API call:
     setSubmitted(true);
   };
 
+  // لو تم الإرسال بنجاح، نعرض رسالة الشكر
   if (submitted) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-6">
@@ -75,9 +91,12 @@ export default function JobsApply() {
     );
   }
 
+  // حساب شرط تمكين زر "التالي" في الخطوة ٢ (كل الملفات مرفوعة + الـ Checkbox متظبط)
+  const isUploadStepValid = cvFile && photoFile && idFrontFile && idBackFile && isConfirmed;
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
-      {/* Step Indicator */}
+      {/* مؤشر الخطوات (Step Indicator) */}
       <div className="mb-10 flex items-center justify-between">
         {STEPS.map((s, i) => (
           <div key={s.key} className="flex items-center gap-2">
@@ -108,124 +127,234 @@ export default function JobsApply() {
         ))}
       </div>
 
-      {/* Step Content */}
+      {/* محتوى الخطوات */}
       <div
         className="rounded-2xl border p-6 backdrop-blur-sm sm:p-8"
         style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}
       >
         <AnimatePresence mode="wait">
+          {/* ========== الخطوة ١: البيانات الشخصية والوظيفة ========== */}
           {step === 0 && (
-            <motion.div key="personal" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
-              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>البيانات الشخصية</h3>
-              <Input name="name" placeholder="الاسم الكامل" value={form.name} onChange={handleChange} />
-              <Input name="email" type="email" placeholder="البريد الإلكتروني" value={form.email} onChange={handleChange} />
-              <Input name="phone" type="tel" placeholder="رقم الجوال" value={form.phone} onChange={handleChange} />
+            <motion.div
+              key="personal"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex flex-col gap-4"
+            >
+              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                البيانات الشخصية والوظيفة المختارة
+              </h3>
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                هذه البيانات مأخوذة من حسابك ولا يمكن تعديلها.
+              </p>
+
+              {/* الاسم - مقفول */}
+              <Input
+                name="name"
+                placeholder="الاسم الكامل"
+                value={user?.name || ""}
+                disabled
+                className="cursor-not-allowed opacity-70"
+                style={{
+               backgroundColor: "#e5e7eb", // لون ثابت مش متغير
+                   color: "#111827",
+                 WebkitTextFillColor: "#111827",
+                                      }}
+
+              />
+              {/* الإيميل - مقفول */}
+              <Input
+                name="email"
+                type="email"
+                placeholder="البريد الإلكتروني"
+                value={user?.email || ""}
+                disabled
+                className="cursor-not-allowed opacity-70"
+                style={{
+  backgroundColor: "#e5e7eb", // لون ثابت مش متغير
+  color: "#111827",
+  WebkitTextFillColor: "#111827",
+}}
+
+              />
+              {/* رقم الجوال - مقفول */}
+              <Input
+                name="phone"
+                type="tel"
+                placeholder="رقم الجوال"
+                value={user?.phone || "لم يتم إضافة رقم جوال"}
+                disabled
+                className="cursor-not-allowed opacity-70"
+               style={{
+  backgroundColor: "#e5e7eb", // لون ثابت مش متغير
+  color: "#111827",
+  WebkitTextFillColor: "#111827",
+}}
+              />
+              {/* الوظيفة المختارة - مقفول وجاية من pendingApplication */}
+              <Input
+                name="position"
+                placeholder="الوظيفة المقدّم عليها"
+                value={pendingApplication?.title || "لم يتم اختيار وظيفة"}
+                disabled
+                className="cursor-not-allowed opacity-70"
+               style={{
+  backgroundColor: "#e5e7eb", // لون ثابت مش متغير
+  color: "#111827",
+  WebkitTextFillColor: "#111827",
+}}
+              />
             </motion.div>
           )}
 
+          {/* ========== الخطوة ٢: رفع الملفات والإقرار ========== */}
           {step === 1 && (
-            <motion.div key="position" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-3">
-              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>اختر الوظيفة</h3>
-              {POSITIONS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setForm((prev) => ({ ...prev, position: p.id }))}
-                  className={`flex items-center gap-4 rounded-xl border p-4 text-right transition-all ${
-                    form.position === p.id ? "ring-2" : ""
-                  }`}
-                  style={{
-                    borderColor: form.position === p.id ? p.color : "var(--border)",
-                    backgroundColor: form.position === p.id ? `${p.color}10` : "transparent",
-                    ["--tw-ring-color"]: p.color,
-                  }}
-                >
-                  <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: p.color }} />
-                  <div className="flex-1">
-                    <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>{p.title}</p>
-                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{p.dept}</p>
-                  </div>
-                  {form.position === p.id && <CheckCircleIcon className="h-5 w-5" style={{ color: p.color }} />}
-                </button>
-              ))}
+            <motion.div
+              key="upload"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex flex-col gap-5"
+            >
+              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                رفع المستندات والإقرار
+              </h3>
+
+              {/* رفع السيرة الذاتية CV */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                  السيرة الذاتية (CV) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => handleFileChange(e, setCvFile)}
+                  className="w-full cursor-pointer rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:brightness-110"
+                  style={{ borderColor: "var(--input-border)", backgroundColor: "var(--input-bg)", color: "var(--text-primary)" }}
+                />
+                {cvFile && <p className="mt-1 text-xs" style={{ color: "#10b981" }}>✅ تم رفع: {cvFile.name}</p>}
+              </div>
+
+              {/* رفع الصورة الشخصية */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                  الصورة الشخصية <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, setPhotoFile)}
+                  className="w-full cursor-pointer rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:brightness-110"
+                  style={{ borderColor: "var(--input-border)", backgroundColor: "var(--input-bg)", color: "var(--text-primary)" }}
+                />
+                {photoFile && <p className="mt-1 text-xs" style={{ color: "#10b981" }}>✅ تم رفع: {photoFile.name}</p>}
+              </div>
+
+              {/* رفع صورة البطاقة (وجه) */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                  صورة البطاقة الشخصية (الوجه) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, setIdFrontFile)}
+                  className="w-full cursor-pointer rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:brightness-110"
+                  style={{ borderColor: "var(--input-border)", backgroundColor: "var(--input-bg)", color: "var(--text-primary)" }}
+                />
+                {idFrontFile && <p className="mt-1 text-xs" style={{ color: "#10b981" }}>✅ تم رفع: {idFrontFile.name}</p>}
+              </div>
+
+              {/* رفع صورة البطاقة (ظهر) */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                  صورة البطاقة الشخصية (الظهر) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, setIdBackFile)}
+                  className="w-full cursor-pointer rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:brightness-110"
+                  style={{ borderColor: "var(--input-border)", backgroundColor: "var(--input-bg)", color: "var(--text-primary)" }}
+                />
+                {idBackFile && <p className="mt-1 text-xs" style={{ color: "#10b981" }}>✅ تم رفع: {idBackFile.name}</p>}
+              </div>
+
+              {/* الـ Checkbox الإلزامي */}
+              <div className="mt-2 flex items-start gap-3 rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
+                <input
+                  type="checkbox"
+                  id="confirm"
+                  checked={isConfirmed}
+                  onChange={(e) => setIsConfirmed(e.target.checked)}
+                  className="mt-1 h-5 w-5 cursor-pointer rounded accent-[var(--accent)]"
+                />
+                <label htmlFor="confirm" className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  أقر بأن جميع البيانات المدخلة والمستندات المرفوعة <strong>صحيحة وكاملة</strong>، وأتحمل المسؤولية الكاملة عنها.
+                </label>
+              </div>
             </motion.div>
           )}
 
+          {/* ========== الخطوة ٣: المراجعة النهائية ========== */}
           {step === 2 && (
-            <motion.div key="experience" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
-              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>الخبرات والمؤهلات</h3>
-              <Input name="education" placeholder="المؤهل الدراسي" value={form.education} onChange={handleChange} />
-              <div>
-                <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>الخبرة السابقة</label>
-                <textarea
-                  name="experience"
-                  rows="3"
-                  placeholder="اكتب خبراتك السابقة..."
-                  value={form.experience}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                  style={{ borderColor: "var(--input-border)", backgroundColor: "var(--input-bg)" }}
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>لماذا تريد الانضمام؟</label>
-                <textarea
-                  name="why"
-                  rows="3"
-                  placeholder="اكتب سبب رغبتك في الانضمام..."
-                  value={form.why}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                  style={{ borderColor: "var(--input-border)", backgroundColor: "var(--input-bg)" }}
-                />
-              </div>
-            </motion.div>
-          )}
+            <motion.div
+              key="review"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex flex-col gap-4"
+            >
+              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                راجع طلبك قبل الإرسال
+              </h3>
 
-          {step === 3 && (
-            <motion.div key="review" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
-              <h3 className="font-display text-lg font-bold" style={{ color: "var(--text-primary)" }}>مراجعة طلبك</h3>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
+              {/* البيانات الشخصية */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border p-3" style={{ borderColor: "var(--border)" }}>
                   <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>الاسم</p>
-                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{form.name || "—"}</p>
+                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{user?.name || "—"}</p>
                 </div>
-                <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
-                  <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>البريد</p>
-                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{form.email || "—"}</p>
+                <div className="rounded-xl border p-3" style={{ borderColor: "var(--border)" }}>
+                  <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>الإيميل</p>
+                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{user?.email || "—"}</p>
                 </div>
-                <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
-                  <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>الجوال</p>
-                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{form.phone || "—"}</p>
+                <div className="rounded-xl border p-3" style={{ borderColor: "var(--border)" }}>
+                  <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>رقم الجوال</p>
+                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{user?.phone || "—"}</p>
                 </div>
-                <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
+                <div className="rounded-xl border p-3" style={{ borderColor: "var(--border)" }}>
                   <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>الوظيفة</p>
-                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                    {POSITIONS.find((p) => p.id === form.position)?.title || "—"}
-                  </p>
+                  <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{pendingApplication?.title || "—"}</p>
                 </div>
               </div>
 
+              {/* الملفات المرفوعة */}
               <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
-                <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>المؤهل</p>
-                <p className="mt-1 text-sm font-medium" style={{ color: "var(--text-primary)" }}>{form.education || "—"}</p>
+                <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>المستندات المرفوعة</p>
+                <ul className="mt-2 flex flex-col gap-1 text-sm" style={{ color: "var(--text-primary)" }}>
+                  <li>📄 السيرة الذاتية: {cvFile ? cvFile.name : "❌ غير مرفوع"}</li>
+                  <li>🖼️ الصورة الشخصية: {photoFile ? photoFile.name : "❌ غير مرفوع"}</li>
+                  <li>🪪 البطاقة (وجه): {idFrontFile ? idFrontFile.name : "❌ غير مرفوع"}</li>
+                  <li>🪪 البطاقة (ظهر): {idBackFile ? idBackFile.name : "❌ غير مرفوع"}</li>
+                </ul>
               </div>
 
-              <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
-                <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>الخبرة</p>
-                <p className="mt-1 text-sm" style={{ color: "var(--text-primary)" }}>{form.experience || "—"}</p>
-              </div>
-
-              <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)" }}>
-                <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>لماذا تريد الانضمام؟</p>
-                <p className="mt-1 text-sm" style={{ color: "var(--text-primary)" }}>{form.why || "—"}</p>
+              {/* حالة الإقرار */}
+              <div className="rounded-xl border p-4" style={{ borderColor: isConfirmed ? "#10b981" : "var(--border)" }}>
+                <p className="text-[11px] font-semibold" style={{ color: "var(--text-muted)" }}>حالة الإقرار</p>
+                <p className="mt-1 text-sm font-medium" style={{ color: isConfirmed ? "#10b981" : "var(--text-muted)" }}>
+                  {isConfirmed ? "✅ تم الإقرار بصحة البيانات" : "❌ لم يتم الإقرار بعد"}
+                </p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Navigation */}
+        {/* ========== أزرار التنقل ========== */}
         <div className="mt-8 flex items-center justify-between">
+          {/* زر السابق */}
           {step > 0 ? (
             <button
               onClick={prev}
@@ -239,23 +368,31 @@ export default function JobsApply() {
             <div />
           )}
 
+          {/* زر التالي / الإرسال */}
           {step < STEPS.length - 1 ? (
+            // في الخطوة ٢ (رفع الملفات)، الزر مش هيتفعل غير لما كل الشروط تتحقق
             <button
               onClick={next}
-              className="flex items-center gap-1 rounded-xl px-5 py-2 text-sm font-semibold text-white transition-all hover:brightness-110"
+              disabled={step === 1 && !isUploadStepValid}
+              className={`flex items-center gap-1 rounded-xl px-5 py-2 text-sm font-semibold text-white transition-all ${
+                step === 1 && !isUploadStepValid
+                  ? "cursor-not-allowed opacity-50"
+                  : "hover:brightness-110"
+              }`}
               style={{ backgroundColor: "var(--accent)" }}
             >
               التالي
               <ChevronLeftIcon className="h-4 w-4" />
             </button>
           ) : (
+            // زر الإرسال النهائي (في الخطوة ٣)
             <button
               onClick={handleSubmit}
               className="flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold text-white transition-all hover:brightness-110"
               style={{ backgroundColor: "#10b981" }}
             >
-              <PaperAirplaneIcon className="h-4 w-4" />
-              إرسال الطلب
+              <CheckCircleIcon className="h-4 w-4" />
+              تقديم الطلب (Apply)
             </button>
           )}
         </div>

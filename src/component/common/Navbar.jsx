@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Bars3Icon, AcademicCapIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
 import MobileDrawer from "./MobileDrawer";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "../../context/AuthContext"; // 👈 استيراد الـ Auth
 
 const PUBLIC_LINKS = [
   { to: "/", label: "الرئيسية" },
   { to: "/courses", label: "الكورسات" },
   { to: "/about", label: "عن المنصة" },
   { to: "/contact", label: "اتصل بنا" },
+  { to: "/jobs", label: "وظائف" }, // 👈 إضافة الرابط
 ];
 
 export default function Navbar() {
+  const { isAuthenticated, openAuthModal } = useAuth(); // 👈 جلب الحالة والدالة
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -21,6 +25,16 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // 👈 دالة معالجة الضغط على "وظائف"
+  const handleJobsClick = (e) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      navigate("/jobs");
+    } else {
+      openAuthModal();
+    }
+  };
 
   return (
     <>
@@ -43,23 +57,41 @@ export default function Navbar() {
             <span className="text-lg font-bold">أكاديمي</span>
           </Link>
 
+          {/* ===== القائمة الرئيسية (Desktop) ===== */}
           <ul className="hidden items-center gap-6 md:flex">
-            {PUBLIC_LINKS.map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition-colors ${
-                      isActive ? "text-[var(--accent-text)]" : "text-[var(--text-secondary)] hover:text-[var(--accent-text)]"
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              </li>
-            ))}
+            {PUBLIC_LINKS.map((link) => {
+              // معاملة خاصة لرابط "وظائف"
+              if (link.to === "/jobs") {
+                return (
+                  <li key={link.to}>
+                    <button
+                      onClick={handleJobsClick}
+                      className="text-sm font-medium transition-colors text-[var(--text-secondary)] hover:text-[var(--accent-text)]"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                );
+              }
+              // باقي الروابط
+              return (
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `text-sm font-medium transition-colors ${
+                        isActive ? "text-[var(--accent-text)]" : "text-[var(--text-secondary)] hover:text-[var(--accent-text)]"
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                </li>
+              );
+            })}
           </ul>
 
+          {/* ===== أزرار تسجيل الدخول والسجل الآن ===== */}
           <div className="hidden items-center gap-3 md:flex">
             <ThemeToggle />
             <Link
@@ -78,6 +110,7 @@ export default function Navbar() {
             </Link>
           </div>
 
+          {/* ===== زر القائمة في الموبايل ===== */}
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
             <button
@@ -92,11 +125,13 @@ export default function Navbar() {
         </nav>
       </motion.header>
 
+      {/* ===== القائمة الجانبية (Mobile Drawer) ===== */}
       <MobileDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        links={PUBLIC_LINKS}
-      />
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  links={PUBLIC_LINKS}
+  onJobsClick={handleJobsClick} // 👈 نمرر الدالة
+/>
     </>
   );
 }

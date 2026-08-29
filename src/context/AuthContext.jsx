@@ -15,7 +15,11 @@ export const ROLES = [
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [pendingApplication, setPendingApplication] = useState(null);
+  
+  // 👇 إضافة State للتحكم في البوب اب
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // دوال تسجيل الدخول والتسجيل (كما هي)
   const login = (email, password, role = "student") => {
     setUser({
       name: email.split("@")[0],
@@ -37,6 +41,10 @@ export function AuthProvider({ children }) {
     setPendingApplication(null);
   };
 
+  // 👇 دوال فتح وقفل البوب اب (الجديد)
+  const openAuthModal = () => setIsAuthModalOpen(true);
+  const closeAuthModal = () => setIsAuthModalOpen(false);
+
   const value = {
     user,
     role: user?.role || "guest",
@@ -47,6 +55,10 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
+    // 👇 نضيف الدوال الجديدة هنا عشان تكون متاحة لكل المكونات
+    isAuthModalOpen,
+    openAuthModal,
+    closeAuthModal,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

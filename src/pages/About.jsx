@@ -9,7 +9,7 @@ const VALUES = [
 
 const team = [
   { name: "أحمد", role: "المؤسس", color: "var(--accent)" },
-  { name: "سارة", role: "مديرة المحتوى", color: "#a855f7" },
+  { name: "أمينة", role: "مديرة المحتوى", color: "#a855f7" },
   { name: "محمد", role: "مطور المنصة", color: "#06b6d4" },
 ];
 

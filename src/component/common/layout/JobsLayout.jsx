@@ -1,10 +1,19 @@
-import { useState, createContext, useContext } from "react";
-import { HomeIcon, BriefcaseIcon, AcademicCapIcon, PaperAirplaneIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useState, createContext, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { 
+  HomeIcon, 
+  BriefcaseIcon, 
+  AcademicCapIcon, 
+  PaperAirplaneIcon, 
+  Bars3Icon, 
+  XMarkIcon 
+} from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
 import JobsHome from "../../../pages/jobs/JobsHome";
 import Jobs from "../../../pages/jobs/Jobs";
 import JobsApply from "../../../pages/jobs/JobsApply";
+import { useAuth } from "../../../context/AuthContext"; // 👈 هنضيف الـ Auth
 
 const SIDEBAR_ITEMS = [
   { key: "home", icon: HomeIcon, label: "مرحباً" },
@@ -25,8 +34,23 @@ const PAGES = {
 };
 
 export default function JobsLayout() {
+  const { isAuthenticated } = useAuth(); // 👈 نجيب حالة المستخدم
+  const navigate = useNavigate(); // 👈 للتحويل بين الصفحات
   const [active, setActive] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // 👇 الحماية: لو مش مسجل، نرجعه للرئيسية (أو نفتح البوب اب)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // هنرجعه للرئيسية، وبعدين هنعدل الكود عشان يفتح البوب اب بدل كده
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  // لو مش مسجل، منرسمش حاجة (نفضل في تحميل أو نرجع null)
+  if (!isAuthenticated) {
+    return null; // أو ممكن تعرض Loading Spinner
+  }
 
   const Page = PAGES[active] || JobsHome;
 
