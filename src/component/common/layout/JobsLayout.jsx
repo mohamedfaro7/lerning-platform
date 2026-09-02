@@ -1,63 +1,78 @@
 import { useState, createContext, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import JobsLeftSlider from "./JobsLeftSlider";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   HomeIcon, 
   BriefcaseIcon, 
   AcademicCapIcon, 
   PaperAirplaneIcon, 
   Bars3Icon, 
-  XMarkIcon 
+  XMarkIcon,
+  UserCircleIcon  // ← أضف هذه
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
 import JobsHome from "../../../pages/jobs/JobsHome";
 import Jobs from "../../../pages/jobs/Jobs";
 import JobsApply from "../../../pages/jobs/JobsApply";
-import { useAuth } from "../../../context/AuthContext"; // 👈 هنضيف الـ Auth
+import { useAuth } from "../../../context/AuthContext";
+import ApplicationTracker from "../../../pages/jobs/ApplicationTracker";
 
+// 🚀 السياق: يتم إنشاؤه مرة واحدة خارج المكون
+const SidebarContext = createContext(null);
+
+// ⭐ مصفوفة عناصر الـ Sidebar (ثابتة)
 const SIDEBAR_ITEMS = [
   { key: "home", icon: HomeIcon, label: "مرحباً" },
   { key: "jobs", icon: BriefcaseIcon, label: "الوظائف" },
   { key: "apply", icon: PaperAirplaneIcon, label: "التقديم" },
-];
+  { key: "track", icon: PaperAirplaneIcon, label:"النتيجة" },
+ ];
 
-const SidebarContext = createContext(null);
-
-export function useSidebar() {
-  return useContext(SidebarContext);
-}
-
+// ⭐ خريطة الصفحات حسب الـ key
 const PAGES = {
   home: JobsHome,
   jobs: Jobs,
   apply: JobsApply,
+  track: ApplicationTracker,
 };
 
+// ⭐ Hook لاستخدام الـ Sidebar (يُستدعى من الأبناء)
+export function useSidebar() {
+  const ctx = useContext(SidebarContext);
+  if (!ctx) throw new Error("useSidebar must be used within SidebarProvider");
+  return ctx;
+}
+
 export default function JobsLayout() {
-  const { isAuthenticated } = useAuth(); // 👈 نجيب حالة المستخدم
-  const navigate = useNavigate(); // 👈 للتحويل بين الصفحات
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate(); // احتياطاً للاستخدام المستقبلي
+  const location = useLocation();
+  
   const [active, setActive] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // 👇 الحماية: لو مش مسجل، نرجعه للرئيسية (أو نفتح البوب اب)
+  // 🔒 تأثير جانبي: استقبال إشارة "openApply" من التسجيل
   useEffect(() => {
-    if (!isAuthenticated) {
-      // هنرجعه للرئيسية، وبعدين هنعدل الكود عشان يفتح البوب اب بدل كده
-      navigate("/", { replace: true });
+    // التحقق الآمن من وجود state و openApply
+    if (location.state && location.state.openApply) {
+      setActive("apply");
+      // مسح الـ state لتجنب البقاء في وضع Apply بعد الـ Refresh
+      window.history.replaceState({}, document.title);
     }
-  }, [isAuthenticated, navigate]);
-
-  // لو مش مسجل، منرسمش حاجة (نفضل في تحميل أو نرجع null)
-  if (!isAuthenticated) {
-    return null; // أو ممكن تعرض Loading Spinner
-  }
+  }, [location]);
+    useEffect(() => {
+    if (active === "apply" && !isAuthenticated) {
+      navigate("/jobs/register", { replace: true });
+    }
+  }, [active, isAuthenticated, navigate]);
 
   const Page = PAGES[active] || JobsHome;
 
   return (
     <SidebarContext.Provider value={{ active, setActive }}>
       <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg)" }}>
-        {/* Desktop Sidebar — solid background, no animation */}
+        {/* Desktop Sidebar */}
         <aside
           className="relative z-20 hidden md:flex w-64 flex-shrink-0 flex-col border-l"
           style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-secondary)" }}
@@ -145,13 +160,14 @@ export default function JobsLayout() {
           </>
         )}
 
-        {/* Main Content — background lives here only */}
+        {/* Main Content */}
         <main className="relative z-10 flex-1 overflow-hidden pt-16 md:pt-0">
           <AnimatedGridBackground />
           <div className="relative z-10">
             <Page />
           </div>
         </main>
+        <JobsLeftSlider />
       </div>
     </SidebarContext.Provider>
   );

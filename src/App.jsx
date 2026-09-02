@@ -11,7 +11,8 @@ import Login from "./pages/Login";
 import StaffLogin from "./pages/StaffLogin";
 import Courses from "./pages/Courses";
 import AuthModal from "./component/common/AuthModal";
-import LeftBottomSlider from "./component/common/LeftBottomSlider"; 
+import JobsAuthScreen from "./pages/jobs/JobsAuthScreen";
+import ApplicationTracker from "./pages/jobs/ApplicationTracker";
 
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
@@ -19,7 +20,7 @@ function AppContent() {
   return (
     <>
       <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
-      <LeftBottomSlider />
+      
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
@@ -30,7 +31,9 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/staff-login" element={<StaffLogin />} />
+        <Route path="/jobs/register" element={<JobsAuthScreen />} />
         <Route path="/jobs" element={<JobsLayout />} />
+        <Route path="/track/:applicationId" element={<ApplicationTracker />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

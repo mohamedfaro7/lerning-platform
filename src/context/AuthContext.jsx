@@ -28,13 +28,15 @@ export function AuthProvider({ children }) {
     });
   };
 
-  const register = (name, email, password, role = "applicant") => {
-    setUser({
-      name,
-      email,
-      role,
-    });
-  };
+ const register = (name, email, password, phone, idNumber, role = "applicant") => {
+  setUser({
+    name,
+    email,
+    phone,
+    idNumber,
+    role,
+  });
+};
 
   const logout = () => {
     setUser(null);

@@ -11,7 +11,6 @@ const PUBLIC_LINKS = [
   { to: "/courses", label: "الكورسات" },
   { to: "/about", label: "عن المنصة" },
   { to: "/contact", label: "اتصل بنا" },
-  { to: "/jobs", label: "وظائف" }, // 👈 إضافة الرابط
 ];
 
 export default function Navbar() {
@@ -26,16 +25,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // 👈 دالة معالجة الضغط على "وظائف"
-  const handleJobsClick = (e) => {
-    e.preventDefault();
-    if (isAuthenticated) {
-      navigate("/jobs");
-    } else {
-      openAuthModal();
-    }
-  };
-
+  
   return (
     <>
       <motion.header
@@ -60,20 +50,7 @@ export default function Navbar() {
           {/* ===== القائمة الرئيسية (Desktop) ===== */}
           <ul className="hidden items-center gap-6 md:flex">
             {PUBLIC_LINKS.map((link) => {
-              // معاملة خاصة لرابط "وظائف"
-              if (link.to === "/jobs") {
-                return (
-                  <li key={link.to}>
-                    <button
-                      onClick={handleJobsClick}
-                      className="text-sm font-medium transition-colors text-[var(--text-secondary)] hover:text-[var(--accent-text)]"
-                    >
-                      {link.label}
-                    </button>
-                  </li>
-                );
-              }
-              // باقي الروابط
+             
               return (
                 <li key={link.to}>
                   <NavLink
@@ -130,7 +107,6 @@ export default function Navbar() {
   open={drawerOpen}
   onClose={() => setDrawerOpen(false)}
   links={PUBLIC_LINKS}
-  onJobsClick={handleJobsClick} // 👈 نمرر الدالة
 />
     </>
   );

@@ -18,10 +18,16 @@ export default function Jobs() {
   const { isAuthenticated, setPendingApplication } = useAuth();
   const { setActive } = useSidebar();
   const navigate = useNavigate();
-
   const handleApply = (job) => {
-    setPendingApplication(job);
-    setActive("apply");
+    setPendingApplication(job); // خزن الوظيفة في السياق
+
+    if (isAuthenticated) {
+      // لو مسجل، روح لصفحة التقديم مباشرة
+      setActive("apply");
+    } else {
+      // لو مش مسجل، روح لصفحة التسجيل الخاصة بالوظائف
+      navigate("/jobs/register");
+    }
   };
 
   return (
