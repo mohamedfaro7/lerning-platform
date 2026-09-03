@@ -67,7 +67,8 @@ export default function JobsLayout() {
 
   return (
     <SidebarContext.Provider value={{ active, setActive }}>
-      <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg)" }}>
+      <div className="relative flex min-h-screen" style={{ backgroundColor: "var(--bg)" }}>
+        <AnimatedGridBackground />
         {/* Desktop Sidebar */}
         <aside
           className="relative z-20 hidden md:flex w-52 flex-shrink-0 flex-col border-l h-screen sticky top-0"
@@ -201,7 +202,6 @@ export default function JobsLayout() {
 
         {/* Main Content */}
         <main className="relative z-10 flex-1 overflow-auto pt-12 md:pt-0">
-          <AnimatedGridBackground />
           <div className="relative z-10">
             <Page />
           </div>

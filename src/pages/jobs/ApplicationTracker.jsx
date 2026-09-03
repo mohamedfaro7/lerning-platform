@@ -109,12 +109,12 @@ export default function ApplicationTracker() {
   const activeStepStatus = application.steps.find((s) => s.id === selectedStep)?.status;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 dir-rtl" dir="rtl">
+    <div className="min-h-screen text-slate-100 py-12 px-4 dir-rtl" dir="rtl">
       <div className="mx-auto max-w-5xl">
         
         {/* Header */}
         <div className="mb-10 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-950/50 px-4 py-1.5 text-xs font-semibold text-indigo-300 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold backdrop-blur-md" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)", color: "var(--accent-text)" }}>
             <AcademicCapIcon className="h-4 w-4 text-indigo-400" />
             متابعة التقديم الأكاديمي
           </div>
@@ -124,10 +124,10 @@ export default function ApplicationTracker() {
         </div>
 
         {/* Main Dark Card */}
-        <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+        <div className="rounded-3xl border p-6 shadow-2xl backdrop-blur-xl sm:p-8" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
           
           {/* Header Controls & Status */}
-          <div className="mb-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-4">
+          <div className="mb-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)" }}>
             <div>
               <p className="text-xs font-medium text-slate-400">حالة الطلب الحالية</p>
               <p className="mt-1 text-base font-bold sm:text-lg">
@@ -144,7 +144,7 @@ export default function ApplicationTracker() {
             </div>
 
             {/* Simulation Controls in Dark Theme */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 p-1.5">
+            <div className="flex items-center gap-2 rounded-xl border p-1.5" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
               <button
                 onClick={() => simulateStatus("in-progress")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
@@ -187,7 +187,7 @@ export default function ApplicationTracker() {
             <div className="flex min-w-[650px] items-center justify-between relative px-6">
               
               {/* Dark Backline */}
-              <div className="absolute left-10 right-10 top-5 h-0.5 -translate-y-1/2 bg-slate-800 z-0" />
+              <div className="absolute left-10 right-10 top-5 h-0.5 -translate-y-1/2 z-0" style={{ backgroundColor: "var(--border)" }} />
 
               {STEPS.map((step, index) => {
                 const stepStatus = application.steps[index]?.status || "pending";
@@ -213,8 +213,8 @@ export default function ApplicationTracker() {
                           ? "border-rose-500 bg-rose-600 text-white shadow-lg shadow-rose-600/20"
                           : isActive
                           ? "border-indigo-500 bg-indigo-600 text-white ring-4 ring-indigo-950/80"
-                          : "border-slate-800 bg-slate-900 text-slate-500 group-hover:border-slate-700"
-                      } ${isSelected ? "ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900" : ""}`}
+                          : "border-[var(--border)] bg-[var(--card)] text-[var(--text-muted)] group-hover:border-[var(--accent)]"
+                      } ${isSelected ? "ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-[var(--bg)]" : ""}`}
                     >
                       {isCompleted ? (
                         <CheckIcon className="h-5 w-5 stroke-[3]" />
@@ -261,7 +261,7 @@ export default function ApplicationTracker() {
                     ? "border-emerald-500/30 bg-emerald-950/20 text-emerald-200"
                     : activeStepStatus === "rejected"
                     ? "border-rose-500/30 bg-rose-950/20 text-rose-200"
-                    : "border-slate-800 bg-slate-950/40 text-slate-300"
+                    : "border-[var(--border)] bg-[var(--card)] text-[var(--text-secondary)]"
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -301,7 +301,7 @@ export default function ApplicationTracker() {
           </AnimatePresence>
 
           {/* Footer */}
-          <div className="mt-8 flex items-center justify-between border-t border-slate-800 pt-5">
+          <div className="mt-8 flex items-center justify-between border-t pt-5" style={{ borderColor: "var(--border)" }}>
             <button
               onClick={() => window.history.back()}
               className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 transition hover:text-white"
