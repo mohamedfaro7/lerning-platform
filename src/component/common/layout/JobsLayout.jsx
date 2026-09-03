@@ -9,12 +9,14 @@ import {
   Bars3Icon, 
   XMarkIcon,
   UserCircleIcon,
+  CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
 import JobsHome from "../../../pages/jobs/JobsHome";
 import Jobs from "../../../pages/jobs/Jobs";
 import JobsApply from "../../../pages/jobs/JobsApply";
+import ApplicationTracker from "../../../pages/jobs/ApplicationTracker";
 import { useAuth } from "../../../context/AuthContext";
 
 const SidebarContext = createContext(null);
@@ -23,12 +25,14 @@ const SIDEBAR_ITEMS = [
   { key: "home", icon: HomeIcon, label: "مرحباً" },
   { key: "jobs", icon: BriefcaseIcon, label: "الوظائف" },
   { key: "apply", icon: PaperAirplaneIcon, label: "التقديم" },
+  { key: "track", icon: CheckCircleIcon, label: "تتبع طلبك" },
 ];
 
 const PAGES = {
   home: JobsHome,
   jobs: Jobs,
   apply: JobsApply,
+  track: ApplicationTracker,
 };
 
 export function useSidebar() {
