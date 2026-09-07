@@ -13,6 +13,8 @@ import Courses from "./pages/Courses";
 import AuthModal from "./component/common/AuthModal";
 import JobsAuthScreen from "./pages/jobs/JobsAuthScreen";
 import ApplicationTracker from "./pages/jobs/ApplicationTracker";
+import CandidatureProfile from "./pages/jobs/CandidateProfile";
+import MyApplications from "./pages/jobs/MyApplications";
 
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
@@ -34,6 +36,9 @@ function AppContent() {
         <Route path="/jobs/register" element={<JobsAuthScreen />} />
         <Route path="/jobs" element={<JobsLayout />} />
         <Route path="/track/:applicationId" element={<ApplicationTracker />} />
+        {/* المسارات الجديدة */}
+         <Route path="/profile/:id" element={<CandidatureProfile />} />
+          <Route path="/my-applications" element={<MyApplications />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

@@ -1,17 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   UserIcon,
-  BriefcaseIcon,
   DocumentArrowUpIcon,
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
-import Input from "../../component/common/Input";
-import Button from "../../component/common/Button";
 import { useAuth } from "../../context/AuthContext";
-import { useSidebar } from "../../component/common/layout/JobsLayout";
 
 // تعريف الخطوات (٣ خطوات)
 const STEPS = [
@@ -31,9 +28,8 @@ const POSITIONS = [
 ];
 
 export default function JobsApply() {
-  // جلب بيانات المستخدم والوظيفة المختارة من السياق
-  const { user, pendingApplication } = useAuth();
-  const { setActive } = useSidebar(); // للتحكم في التبويب النشط
+  const navigate = useNavigate();
+  const { user, pendingApplication, addApplication } = useAuth();
 
   const [step, setStep] = useState(0);
 
@@ -45,6 +41,19 @@ export default function JobsApply() {
 
   // State للإقرار
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // معالجة اختيار الملفات مع التحقق من الحجم
+  const handleFileChange = (e, setter, maxSizeMB = 5) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      alert(`حجم الملف يجب ألا يتجاوز ${maxSizeMB} ميجابايت.`);
+      e.target.value = "";
+      return;
+    }
+    setter(file);
+  };
 
   // التنقل بين الخطوات
   const nextStep = () => {
@@ -63,14 +72,8 @@ export default function JobsApply() {
 
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
-  const handleFileChange = (e, setter) => {
-    const file = e.target.files[0];
-    if (file) setter(file);
-  };
-
-  // ⭐ دالة الإرسال المعدلة
+  // دالة الإرسال النهائية
   const handleSubmit = () => {
-    // التحقق النهائي (تأكيد)
     if (!cvFile || !photoFile || !idFrontFile || !idBackFile) {
       alert("جميع الملفات مطلوبة.");
       return;
@@ -80,7 +83,11 @@ export default function JobsApply() {
       return;
     }
 
-    // تجميع البيانات النهائية
+    if (!pendingApplication) {
+      alert("لم يتم اختيار وظيفة!");
+      return;
+    }
+
     const finalData = {
       name: user?.name || "",
       email: user?.email || "",
@@ -96,15 +103,16 @@ export default function JobsApply() {
 
     console.log("✅ البيانات النهائية المرسلة:", finalData);
 
-    // 🚀 هنا سنرسل البيانات للـ API (لاحقاً)
-    // حالياً، ننتقل إلى صفحة التتبع (Tracker) داخل نفس الـ Layout
-    setActive("track"); // هذا سيغير المحتوى إلى ApplicationTracker
+    const newAppId = addApplication?.(pendingApplication.role);
 
-    // (اختياري) يمكن مسح بيانات النموذج أو إعادة تعيين الخطوات
-    // لكن الأفضل تركها كما هي، لأن المستخدم لن يعود للخلف.
+    if (!newAppId) {
+      alert("حدث خطأ أثناء إنشاء الطلب. حاول مرة أخرى.");
+      return;
+    }
+
+    navigate(`/track/${newAppId}`, { replace: true });
   };
 
-  // ======== الهيكل الرئيسي ========
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
       {/* مؤشر الخطوات */}

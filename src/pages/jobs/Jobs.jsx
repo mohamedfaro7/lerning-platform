@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BriefcaseIcon, MapPinIcon, ClockIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -15,17 +14,20 @@ const JOBS = [
 ];
 
 export default function Jobs() {
-  const { isAuthenticated, setPendingApplication } = useAuth();
-  const { setActive } = useSidebar();
+  const sidebar = useSidebar();
   const navigate = useNavigate();
+  const { isAuthenticated, setPendingApplication } = useAuth();
+
   const handleApply = (job) => {
-    setPendingApplication(job); // خزن الوظيفة في السياق
+    setPendingApplication(job); // تخزين الوظيفة المختارة
 
     if (isAuthenticated) {
-      // لو مسجل، روح لصفحة التقديم مباشرة
-      setActive("apply");
+      if (sidebar?.setActive) {
+        sidebar.setActive("apply");
+      } else {
+        navigate("/jobs/apply");
+      }
     } else {
-      // لو مش مسجل، روح لصفحة التسجيل الخاصة بالوظائف
       navigate("/jobs/register");
     }
   };
@@ -53,7 +55,10 @@ export default function Jobs() {
             style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}
           >
             <div className="flex items-center justify-between">
-              <span className="rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: `${job.color}18`, color: job.color }}>
+              <span
+                className="rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                style={{ backgroundColor: `${job.color}18`, color: job.color }}
+              >
                 {job.department}
               </span>
               <div className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
@@ -63,14 +68,18 @@ export default function Jobs() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <h3 className="font-display text-base font-bold" style={{ color: "var(--text-primary)" }}>{job.title}</h3>
+              <h3 className="font-display text-base font-bold" style={{ color: "var(--text-primary)" }}>
+                {job.title}
+              </h3>
               <div className="flex items-center gap-1 text-xs" style={{ color: "var(--text-muted)" }}>
                 <MapPinIcon className="h-3 w-3" />
                 {job.location}
               </div>
             </div>
 
-            <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{job.description}</p>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              {job.description}
+            </p>
 
             <div className="mt-auto pt-1">
               <button

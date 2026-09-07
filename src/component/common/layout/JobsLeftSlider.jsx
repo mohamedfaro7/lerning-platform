@@ -1,4 +1,6 @@
+
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   ArrowRightOnRectangleIcon,
   ArrowLeftOnRectangleIcon,
@@ -10,11 +12,12 @@ import {
   CpuChipIcon,
   ShieldCheckIcon,
   ChevronLeftIcon,
+  BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../../context/AuthContext";
 
 export default function JobsLeftSlider({ isOpen, onClose }) {
-  const { user, isAuthenticated, logout, openAuthModal } = useAuth();
+  const { user, isAuthenticated, logout, openAuthModal, applications = [] } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -35,6 +38,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -44,6 +48,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
             className="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-md"
           />
 
+          {/* Bottom Drawer Sheet */}
           <motion.div
             initial={{ y: "100%", opacity: 0.5 }}
             animate={{ y: 0, opacity: 1 }}
@@ -52,12 +57,15 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
             className="fixed bottom-0 left-0 z-50 max-h-[88vh] w-full border-t border-slate-800/80 bg-slate-950/90 p-6 text-slate-100 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.8)] backdrop-blur-3xl dir-rtl sm:w-96 sm:rounded-tr-3xl sm:border-r"
             dir="rtl"
           >
+            {/* Background Ambient Glow */}
             <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl" />
 
+            {/* Handle Bar */}
             <div className="mb-4 flex justify-center">
               <div className="h-1.5 w-10 rounded-full bg-slate-800 transition-colors group-hover:bg-slate-700" />
             </div>
 
+            {/* Header */}
             <div className="relative mb-5 flex items-center justify-between border-b border-slate-800/60 pb-5">
               <div className="flex items-center gap-3.5">
                 <div className="relative">
@@ -71,7 +79,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
                 </div>
 
                 <div className="flex flex-col">
-                  <span className="text-base font-extrabold text-white tracking-wide">
+                  <span className="text-base font-extrabold tracking-wide text-white">
                     {isAuthenticated ? user?.name || "مستخدم" : "مرحباً بك!"}
                   </span>
                   <span className="text-xs font-medium text-slate-400">
@@ -88,17 +96,18 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
               </button>
             </div>
 
+            {/* AI Assistant Button */}
             <div className="mb-4">
               <button
                 onClick={handleAiAssistant}
                 className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-900 p-3.5 transition-all duration-300 hover:border-rose-500/60 hover:shadow-lg hover:shadow-rose-950/30"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 transition-all group-hover:bg-rose-500 group-hover:text-white">
                     <CpuChipIcon className="h-5 w-5" />
                   </div>
                   <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-100 group-hover:text-rose-300 transition-colors">
+                    <span className="text-xs font-bold text-slate-100 transition-colors group-hover:text-rose-300">
                       AI Assistant
                     </span>
                     <span className="text-[10px] text-slate-400">
@@ -110,9 +119,38 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
               </button>
             </div>
 
+            {/* Main Content Area */}
             <div className="space-y-3">
               {isAuthenticated ? (
                 <>
+                  {/* ⭐ NEW: My Applications Nav Button */}
+                  <Link
+                    to="/my-applications"
+                    onClick={onClose}
+                    className="group flex w-full items-center justify-between rounded-2xl border border-indigo-500/30 bg-indigo-950/30 p-3.5 transition-all duration-300 hover:border-indigo-500/60 hover:bg-indigo-900/40 hover:shadow-lg hover:shadow-indigo-950/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 transition-all group-hover:bg-indigo-500 group-hover:text-white">
+                        <BriefcaseIcon className="h-5 w-5" />
+                      </div>
+                      <div className="flex flex-col text-right">
+                        <span className="text-xs font-bold text-slate-100 transition-colors group-hover:text-indigo-300">
+                          طلبات التقديم (Candidate Portal)
+                        </span>
+                        <span className="text-[10px] text-slate-400">
+                          تتبع حالة القبول والخطوات
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-lg border border-indigo-500/30 bg-indigo-500/20 px-2 py-0.5 text-[10px] font-bold text-indigo-300">
+                        {applications.length} طلب
+                      </span>
+                      <ChevronLeftIcon className="h-4 w-4 text-slate-500 transition-transform group-hover:-translate-x-1 group-hover:text-indigo-400" />
+                    </div>
+                  </Link>
+
+                  {/* Account Status */}
                   <div className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-3.5">
                     <div className="flex items-center gap-2">
                       <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
@@ -124,6 +162,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
                     </span>
                   </div>
 
+                  {/* Phone Info */}
                   <div className="flex items-center justify-between rounded-2xl border border-slate-800/80 bg-slate-900/50 p-3.5 transition-colors hover:bg-slate-900/80">
                     <div className="flex items-center gap-3">
                       <div className="rounded-xl border border-slate-800 bg-slate-950 p-2 text-slate-400">
@@ -138,6 +177,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
                     </div>
                   </div>
 
+                  {/* ID Info */}
                   <div className="flex items-center justify-between rounded-2xl border border-slate-800/80 bg-slate-900/50 p-3.5 transition-colors hover:bg-slate-900/80">
                     <div className="flex items-center gap-3">
                       <div className="rounded-xl border border-slate-800 bg-slate-950 p-2 text-slate-400">
@@ -152,6 +192,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
                     </div>
                   </div>
 
+                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="group mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-500/20 bg-rose-950/20 py-3 text-xs font-bold text-rose-400 transition-all hover:border-rose-500/40 hover:bg-rose-600 hover:text-white"
@@ -182,6 +223,7 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
               )}
             </div>
 
+            {/* Footer */}
             <div className="mt-5 border-t border-slate-800/60 pt-3 text-center">
               <span className="text-[10px] font-medium text-slate-400">
                 {isAuthenticated ? "جميع بياناتك محمية ومُشفَّرة" : "تصفح كزائر • خيارات محدودة"}

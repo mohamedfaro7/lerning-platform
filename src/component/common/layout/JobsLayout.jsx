@@ -16,8 +16,8 @@ import AnimatedGridBackground from "../AnimatedGridBackground";
 import JobsHome from "../../../pages/jobs/JobsHome";
 import Jobs from "../../../pages/jobs/Jobs";
 import JobsApply from "../../../pages/jobs/JobsApply";
-import ApplicationTracker from "../../../pages/jobs/ApplicationTracker";
 import { useAuth } from "../../../context/AuthContext";
+import MyApplications from "../../../pages/jobs/MyApplications";
 
 const SidebarContext = createContext(null);
 
@@ -32,7 +32,7 @@ const PAGES = {
   home: JobsHome,
   jobs: Jobs,
   apply: JobsApply,
-  track: ApplicationTracker,
+  track: MyApplications,
 };
 
 export function useSidebar() {
