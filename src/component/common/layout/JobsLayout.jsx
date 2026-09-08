@@ -1,6 +1,6 @@
 import { useState, createContext, useContext, useEffect } from "react";
 import JobsLeftSlider from "./JobsLeftSlider";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { 
   HomeIcon, 
   BriefcaseIcon, 
@@ -10,6 +10,7 @@ import {
   XMarkIcon,
   UserCircleIcon,
   CheckCircleIcon,
+  UserIcon, // 👈 تم إضافة الأيقونة
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
@@ -42,13 +43,21 @@ export function useSidebar() {
 }
 
 export default function JobsLayout() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, applications = [] } = useAuth(); // 👈 جلب applications
   const navigate = useNavigate();
   const location = useLocation();
   
   const [active, setActive] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  // 🎯 التحقق من وجود أي طلب وصل للقرار النهائي (مقبول/مرفوض/الخطوة الأخيرة)
+  const unlockedApp = applications.find(
+    (app) =>
+      app.status === "accepted" ||
+      app.status === "rejected" ||
+      app.currentStep === 5
+  );
 
   useEffect(() => {
     if (location.state && location.state.openApply) {
@@ -69,6 +78,7 @@ export default function JobsLayout() {
     <SidebarContext.Provider value={{ active, setActive }}>
       <div className="relative flex min-h-screen" style={{ backgroundColor: "var(--bg)" }}>
         <AnimatedGridBackground />
+        
         {/* Desktop Sidebar */}
         <aside
           className="relative z-20 hidden md:flex w-52 flex-shrink-0 flex-col border-l h-screen sticky top-0"
@@ -99,6 +109,20 @@ export default function JobsLayout() {
                 {item.label}
               </button>
             ))}
+
+            {/* 🎓 زر ملف الترشح والقرار النهائي (يظهر فقط بعد صدور القرار) */}
+            {unlockedApp && (
+              <Link
+                to={`/profile/${unlockedApp.id}`}
+                className="mt-2 flex items-center justify-between rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-2 text-[11px] font-bold text-indigo-400 transition-all hover:bg-indigo-500/20"
+              >
+                <div className="flex items-center gap-2">
+                  <UserIcon className="h-3.5 w-3.5" />
+                  <span>ملف الترشح</span>
+                </div>
+                <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+              </Link>
+            )}
           </nav>
 
           <div className="mt-auto border-t p-2.5 flex items-center gap-1.5" style={{ borderColor: "var(--border)" }}>
@@ -125,7 +149,7 @@ export default function JobsLayout() {
           </div>
         </aside>
 
-        {/* Mobile Header */}
+        {/* Mobile Header & Popup Menu */}
         <div
           className="fixed inset-x-0 top-0 z-50 flex items-center justify-between border-b px-4 py-3 md:hidden"
           style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-secondary)" }}
@@ -139,7 +163,6 @@ export default function JobsLayout() {
           </button>
         </div>
 
-        {/* Mobile Popup Menu */}
         {mobileOpen && (
           <>
             <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden" onClick={() => setMobileOpen(false)} />
@@ -172,6 +195,19 @@ export default function JobsLayout() {
                     {item.label}
                   </button>
                 ))}
+
+                {unlockedApp && (
+                  <Link
+                    to={`/profile/${unlockedApp.id}`}
+                    onClick={() => setMobileOpen(false)}
+                    className="mt-1 flex items-center justify-between rounded-lg bg-indigo-600 px-3 py-2.5 text-xs font-bold text-white shadow-md shadow-indigo-600/20"
+                  >
+                    <div className="flex items-center gap-2">
+                      <UserIcon className="h-4 w-4" />
+                      <span>ملف الترشح والقرار</span>
+                    </div>
+                  </Link>
+                )}
               </nav>
 
               <div className="mt-3 border-t pt-3 flex items-center gap-2" style={{ borderColor: "var(--border)" }}>
