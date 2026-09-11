@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRightOnRectangleIcon,
   XMarkIcon,
@@ -11,13 +11,14 @@ import {
   ShieldCheckIcon,
   ChevronLeftIcon,
   BriefcaseIcon,
-  UserIcon, // 👈 تم إضافة الأيقونة
+  UserIcon,
+  ClipboardDocumentListIcon // 👈 تم إضافة الأيقونة
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../../context/AuthContext";
 
 export default function JobsLeftSlider({ isOpen, onClose }) {
   const { user, isAuthenticated, logout, openAuthModal, applications = [] } = useAuth();
-
+const navigate = useNavigate();
   // 🎯 استخراج الطلب المكتمل إن وجد
   const unlockedApp = applications.find(
     (app) =>
@@ -169,6 +170,19 @@ export default function JobsLeftSlider({ isOpen, onClose }) {
                       <CheckCircleIcon className="h-3.5 w-3.5" /> نشط ومسجل
                     </span>
                   </div>
+                  {/* ⭐ Review Queue - جديد */}
+<button
+  onClick={() => {
+    navigate("/jobs/review-queue");
+    closeSlider();
+  }}
+  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all hover:bg-[var(--surface-hover)]"
+  style={{ color: "var(--text-primary)" }}
+>
+  <ClipboardDocumentListIcon className="h-5 w-5" style={{ color: "var(--accent)" }} />
+  Review Queue
+</button>
+                  
 
                   {/* Logout Button */}
                   <button

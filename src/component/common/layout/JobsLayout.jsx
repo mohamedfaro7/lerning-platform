@@ -10,7 +10,8 @@ import {
   XMarkIcon,
   UserCircleIcon,
   CheckCircleIcon,
-  UserIcon, // 👈 تم إضافة الأيقونة
+  UserIcon,
+   TableCellsIcon // 👈 تم إضافة الأيقونة
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
@@ -19,6 +20,7 @@ import Jobs from "../../../pages/jobs/Jobs";
 import JobsApply from "../../../pages/jobs/JobsApply";
 import { useAuth } from "../../../context/AuthContext";
 import MyApplications from "../../../pages/jobs/MyApplications";
+import ApprovedMatrix from "../../../pages/jobs/ApprovedMatrix";
 
 const SidebarContext = createContext(null);
 
@@ -27,6 +29,7 @@ const SIDEBAR_ITEMS = [
   { key: "jobs", icon: BriefcaseIcon, label: "الوظائف" },
   { key: "apply", icon: PaperAirplaneIcon, label: "التقديم" },
   { key: "track", icon: CheckCircleIcon, label: "تتبع طلبك" },
+  { key: "matrix", icon: TableCellsIcon, label: "مصفوفة الموافقات" },
 ];
 
 const PAGES = {
@@ -34,6 +37,7 @@ const PAGES = {
   jobs: Jobs,
   apply: JobsApply,
   track: MyApplications,
+  matrix: ApprovedMatrix,
 };
 
 export function useSidebar() {

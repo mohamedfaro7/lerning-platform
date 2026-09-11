@@ -15,6 +15,8 @@ import JobsAuthScreen from "./pages/jobs/JobsAuthScreen";
 import ApplicationTracker from "./pages/jobs/ApplicationTracker";
 import CandidatureProfile from "./pages/jobs/CandidateProfile";
 import MyApplications from "./pages/jobs/MyApplications";
+import ApprovedMatrix from "./pages/jobs/ApprovedMatrix";
+import ReviewQueue from "./pages/jobs/ReviewQueue";
 
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
@@ -39,6 +41,8 @@ function AppContent() {
         {/* المسارات الجديدة */}
          <Route path="/profile/:id" element={<CandidatureProfile />} />
           <Route path="/my-applications" element={<MyApplications />} />
+          <Route path="/jobs/approved-matrix" element={<ApprovedMatrix />} />
+          <Route path="/jobs/review-queue" element={<ReviewQueue />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
