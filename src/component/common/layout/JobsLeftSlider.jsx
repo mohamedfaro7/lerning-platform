@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRightOnRectangleIcon,
   XMarkIcon,
-  IdentificationIcon,
-  PhoneIcon,
   CheckCircleIcon,
   SparklesIcon,
   CpuChipIcon,
@@ -12,13 +10,17 @@ import {
   ChevronLeftIcon,
   BriefcaseIcon,
   UserIcon,
-  ClipboardDocumentListIcon // 👈 تم إضافة الأيقونة
+  ClipboardDocumentListIcon,
+  Squares2X2Icon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../../context/AuthContext";
 
 export default function JobsLeftSlider({ isOpen, onClose }) {
-  const { user, isAuthenticated, logout, openAuthModal, applications = [] } = useAuth();
-const navigate = useNavigate();
+  // 🎯 استخراج كافة البيانات المطلوبة من الـ AuthContext في الأعلى
+  const { user, isAuthenticated, logout, openAuthModal, applications = [], pendingApplication } = useAuth();
+  const navigate = useNavigate();
+
   // 🎯 استخراج الطلب المكتمل إن وجد
   const unlockedApp = applications.find(
     (app) =>
@@ -37,10 +39,27 @@ const navigate = useNavigate();
     onClose();
   };
 
+  // 🎯 معالجة التوجيه لمراجعة الطلبات
+  const handleNavigateToReviewQueue = () => {
+    navigate("/jobs/review-queue");
+    onClose();
+  };
+
+  // 🎯 معالجة التوجيه لتفاصيل المسارات
+  const handleNavigateToTracks = () => {
+    if (pendingApplication?.trackId) {
+      navigate(`/jobs/tracks-profiles?track=${pendingApplication.trackId}&job=${pendingApplication.id}`);
+    } else {
+      navigate("/jobs/tracks-profiles");
+    }
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Overlay Background */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -50,6 +69,7 @@ const navigate = useNavigate();
             className="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-md"
           />
 
+          {/* Slider Drawer */}
           <motion.div
             initial={{ y: "100%", opacity: 0.5 }}
             animate={{ y: 0, opacity: 1 }}
@@ -116,7 +136,7 @@ const navigate = useNavigate();
             <div className="space-y-3 overflow-y-auto max-h-[50vh] pr-1">
               {isAuthenticated ? (
                 <>
-                  {/* 🎓 1. Candidature Profil Button (يظهر عند فتح الملف) */}
+                  {/* 🎓 1. Candidature Profil Button */}
                   {unlockedApp && (
                     <Link
                       to={`/profile/${unlockedApp.id}`}
@@ -160,7 +180,7 @@ const navigate = useNavigate();
                     </span>
                   </Link>
 
-                  {/* Account Status */}
+                  {/* 🛡️ 3. Account Status */}
                   <div className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-3.5">
                     <div className="flex items-center gap-2">
                       <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
@@ -170,21 +190,42 @@ const navigate = useNavigate();
                       <CheckCircleIcon className="h-3.5 w-3.5" /> نشط ومسجل
                     </span>
                   </div>
-                  {/* ⭐ Review Queue - جديد */}
-<button
-  onClick={() => {
-    navigate("/jobs/review-queue");
-    closeSlider();
-  }}
-  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all hover:bg-[var(--surface-hover)]"
-  style={{ color: "var(--text-primary)" }}
->
-  <ClipboardDocumentListIcon className="h-5 w-5" style={{ color: "var(--accent)" }} />
-  Review Queue
-</button>
-                  
 
-                  {/* Logout Button */}
+                  {/* ⭐ 4. Review Queue */}
+                  <button
+                    onClick={handleNavigateToReviewQueue}
+                    className="group flex w-full items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/50 p-3.5 hover:border-slate-700 hover:bg-slate-900 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
+                        <ClipboardDocumentListIcon className="h-5 w-5" />
+                      </div>
+                      <div className="flex flex-col text-right">
+                        <span className="text-xs font-bold text-slate-100">مركز تدقيق الطلبات</span>
+                        <span className="text-[10px] text-slate-400">Review Queue</span>
+                      </div>
+                    </div>
+                    <ChevronLeftIcon className="h-4 w-4 text-slate-500 group-hover:-translate-x-1 transition-transform" />
+                  </button>
+
+                  {/* ⭐ 5. عرض تفاصيل المسارات والوظائف */}
+                  <button
+                    onClick={handleNavigateToTracks}
+                    className="group flex w-full items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/50 p-3.5 hover:border-slate-700 hover:bg-slate-900 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-400">
+                        <Squares2X2Icon className="h-5 w-5" />
+                      </div>
+                      <div className="flex flex-col text-right">
+                        <span className="text-xs font-bold text-slate-100">تفاصيل المسارات والوظائف</span>
+                        <span className="text-[10px] text-slate-400">Tracks & Job Profiles</span>
+                      </div>
+                    </div>
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4 text-slate-500 group-hover:text-purple-400 transition-colors" />
+                  </button>
+
+                  {/* 🚪 Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-500/20 bg-rose-950/20 py-3 text-xs font-bold text-rose-400 hover:bg-rose-600 hover:text-white transition-all"

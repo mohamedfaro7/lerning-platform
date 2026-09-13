@@ -11,7 +11,8 @@ import {
   UserCircleIcon,
   CheckCircleIcon,
   UserIcon,
-   TableCellsIcon // 👈 تم إضافة الأيقونة
+   TableCellsIcon ,
+  Squares2X2Icon // 👈 تم إضافة الأيقونة
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
@@ -21,6 +22,7 @@ import JobsApply from "../../../pages/jobs/JobsApply";
 import { useAuth } from "../../../context/AuthContext";
 import MyApplications from "../../../pages/jobs/MyApplications";
 import ApprovedMatrix from "../../../pages/jobs/ApprovedMatrix";
+import TracksAndJobs from "../../../pages/jobs/TracksAndJobs";
 
 const SidebarContext = createContext(null);
 
@@ -30,6 +32,7 @@ const SIDEBAR_ITEMS = [
   { key: "apply", icon: PaperAirplaneIcon, label: "التقديم" },
   { key: "track", icon: CheckCircleIcon, label: "تتبع طلبك" },
   { key: "matrix", icon: TableCellsIcon, label: "مصفوفة الموافقات" },
+  { key: "tracks", icon: Squares2X2Icon, label: "إدارة المسارات" },
 ];
 
 const PAGES = {
@@ -38,6 +41,7 @@ const PAGES = {
   apply: JobsApply,
   track: MyApplications,
   matrix: ApprovedMatrix,
+  tracks: TracksAndJobs,
 };
 
 export function useSidebar() {
@@ -50,7 +54,6 @@ export default function JobsLayout() {
   const { user, isAuthenticated, applications = [] } = useAuth(); // 👈 جلب applications
   const navigate = useNavigate();
   const location = useLocation();
-  
   const [active, setActive] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -131,6 +134,7 @@ export default function JobsLayout() {
 
           <div className="mt-auto border-t p-2.5 flex items-center gap-1.5" style={{ borderColor: "var(--border)" }}>
             <ThemeToggle />
+              
             <button
               onClick={() => setProfileOpen(true)}
               className="flex flex-1 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2.5 py-1.5 text-[11px] font-medium transition-colors hover:border-[var(--accent)]"

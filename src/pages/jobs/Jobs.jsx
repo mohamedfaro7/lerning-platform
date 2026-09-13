@@ -5,11 +5,11 @@ import { useAuth } from "../../context/AuthContext";
 import { useSidebar } from "../../component/common/layout/JobsLayout";
 
 const JOBS = [
-  { id: 1, title: "مدير تقني", department: "الهندسة", location: "عن بُعد", type: "دوام كامل", description: "إدارة فريق التطوير والإشراف على البنية التحتية التقنية للمنصة.", color: "#3b82f6", role: "technical_manager" },
-  { id: 2, title: "رئيس مسار برمجي", department: "التعليم", location: "الرياض", type: "دوام كامل", description: "قيادة المسار البرمجي وتصميم المنهج والإشراف على المدرسين.", color: "#a855f7", role: "track_head" },
-  { id: 3, title: "مراجع أكاديمي", department: "المحتوى", location: "عن بُعد", type: "دوام جزئي", description: "مراجعة المحتوى الأكاديمي وضمان جودة الدروس والكورسات.", color: "#06b6d4", role: "academic_reviewer" },
-  { id: 4, title: "مخطط عمليات", department: "العمليات", location: "الرياض", type: "دوام كامل", description: "التخطيط والتنسيق بين الأقسام المختلفة لضمان سير العمل بسلاسة.", color: "#10b981", role: "ops_planner" },
-  { id: 5, title: "مراجع جودة", department: "المحتوى", location: "عن بُعد", type: "دوام جزئي", description: "مراجعة وتقييم جودة المحتوى التعليمي وتقديم توصيات للتحسين.", color: "#f59e0b", role: "quality_reviewer" },
+  { id: 1, title: "مدير تقني", department: "الهندسة", location: "عن بُعد", type: "دوام كامل", description: "إدارة فريق التطوير والإشراف على البنية التحتية التقنية للمنصة.", color: "#3b82f6", role: "technical_manager" , trackId: "track_001"},
+  { id: 2, title: "رئيس مسار برمجي", department: "التعليم", location: "الرياض", type: "دوام كامل", description: "قيادة المسار البرمجي وتصميم المنهج والإشراف على المدرسين.", color: "#a855f7", role: "track_head", trackId: "track_002" },
+  { id: 3, title: "مراجع أكاديمي", department: "المحتوى", location: "عن بُعد", type: "دوام جزئي", description: "مراجعة المحتوى الأكاديمي وضمان جودة الدروس والكورسات.", color: "#06b6d4", role: "academic_reviewer", trackId: "track_001" },
+  { id: 4, title: "مخطط عمليات", department: "العمليات", location: "الرياض", type: "دوام كامل", description: "التخطيط والتنسيق بين الأقسام المختلفة لضمان سير العمل بسلاسة.", color: "#10b981", role: "ops_planner", trackId: "track_003" },
+  { id: 5, title: "مراجع جودة", department: "المحتوى", location: "عن بُعد", type: "دوام جزئي", description: "مراجعة وتقييم جودة المحتوى التعليمي وتقديم توصيات للتحسين.", color: "#f59e0b", role: "quality_reviewer", trackId: "track_001" },
   { id: 6, title: "المشرف العام", department: "الإدارة", location: "الرياض", type: "دوام كامل", description: "الإشراف العام على جميع أنشطة المنصة وإدارة الفرق.", color: "#ef4444", role: "admin" },
 ];
 
