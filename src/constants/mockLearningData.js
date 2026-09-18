@@ -621,3 +621,38 @@ export const getStats = (sectionId = null) => {
     instructors,
   };
 };
+// ═══════════════════════════════════════════════════════════
+//   دوال تفاصيل الأستاذ (Instructor Detail Helpers)
+// ═══════════════════════════════════════════════════════════
+
+// جلب مدرّس بالـ ID
+export const getInstructorById = (instructorId) =>
+  MOCK_INSTRUCTORS.find((i) => i.id === instructorId);
+
+// جلب طلاب مدرّس (عبر جروباته)
+export const getStudentsByInstructor = (instructorId) => {
+  const groups = getGroupsByInstructor(instructorId);
+  const groupIds = groups.map((g) => g.id);
+  return MOCK_STUDENTS.filter((s) => groupIds.includes(s.groupId));
+};
+
+// جلب طلاب جروب معين
+export const getStudentsByGroup = (groupId) =>
+  MOCK_STUDENTS.filter((s) => s.groupId === groupId);
+
+// جلب الفيدباك الخاص بمدرّس (مرتب من الأحدث للأقدم)
+export const getFeedbackByInstructor = (instructorId) => {
+  return MOCK_FEEDBACK
+    .filter((f) => f.instructorId === instructorId)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+};
+
+// جلب معلومات الطالب بالـ ID (للـ Feedback)
+export const getStudentById = (studentId) =>
+  MOCK_STUDENTS.find((s) => s.id === studentId);
+
+// حساب إجمالي الطلاب المسجلين في جروب معين (المدفوعين + غير المدفوعين)
+export const getGroupCollected = (groupId) => {
+  const payments = MOCK_PAYMENTS.filter((p) => p.groupId === groupId);
+  return payments.reduce((sum, p) => sum + p.paidAmount, 0);
+};
