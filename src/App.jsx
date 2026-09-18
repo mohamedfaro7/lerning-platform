@@ -18,6 +18,7 @@ import MyApplications from "./pages/jobs/MyApplications";
 import ApprovedMatrix from "./pages/jobs/ApprovedMatrix";
 import ReviewQueue from "./pages/jobs/ReviewQueue";
 import TracksAndJobs from "./pages/jobs/TracksAndJobs";
+import Analytics from "./pages/jobs/Analytics";
 
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
@@ -45,6 +46,7 @@ function AppContent() {
           <Route path="/jobs/approved-matrix" element={<ApprovedMatrix />} />
           <Route path="/jobs/review-queue" element={<ReviewQueue />} />
           <Route path="/jobs/tracks-profiles" element={<TracksAndJobs />} />
+          <Route path="/jobs/analytics" element={<Analytics />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

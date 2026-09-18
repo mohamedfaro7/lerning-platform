@@ -21,6 +21,22 @@ export const MOCK_TRACKS = [
         skills: ["React", "JavaScript", "HTML", "CSS", "Tailwind", "REST APIs"],
         duration: { value: 30, unit: "days" },
         createdAt: "2025-03-15",
+        attachments: [
+    {
+      id: "att_101",
+      name: "منهج المسار التدريبي (Syllabus)",
+      type: "pdf",
+      size: "1.8 MB",
+      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" // رابط للملف
+    },
+    {
+      id: "att_102",
+      name: "شرائح التعريف بالدورة (Intro Presentation)",
+      type: "presentation",
+      size: "3.5 MB",
+      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    }
+  ]
       },
       {
         id: "job_002",

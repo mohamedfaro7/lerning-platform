@@ -12,7 +12,8 @@ import {
   CheckCircleIcon,
   UserIcon,
    TableCellsIcon ,
-  Squares2X2Icon // 👈 تم إضافة الأيقونة
+  Squares2X2Icon ,
+  ChartBarIcon// 👈 تم إضافة الأيقونة
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
@@ -23,6 +24,7 @@ import { useAuth } from "../../../context/AuthContext";
 import MyApplications from "../../../pages/jobs/MyApplications";
 import ApprovedMatrix from "../../../pages/jobs/ApprovedMatrix";
 import TracksAndJobs from "../../../pages/jobs/TracksAndJobs";
+import Analytics from "../../../pages/jobs/Analytics";
 
 const SidebarContext = createContext(null);
 
@@ -33,6 +35,7 @@ const SIDEBAR_ITEMS = [
   { key: "track", icon: CheckCircleIcon, label: "تتبع طلبك" },
   { key: "matrix", icon: TableCellsIcon, label: "مصفوفة الموافقات" },
   { key: "tracks", icon: Squares2X2Icon, label: "إدارة المسارات" },
+   { key: "analytics", icon: ChartBarIcon, label: "الإحصائيات" },
 ];
 
 const PAGES = {
@@ -42,6 +45,7 @@ const PAGES = {
   track: MyApplications,
   matrix: ApprovedMatrix,
   tracks: TracksAndJobs,
+  analytics: Analytics,
 };
 
 export function useSidebar() {

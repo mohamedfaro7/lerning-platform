@@ -39,7 +39,7 @@ const item = {
 export default function Home() {
   return (
     <>
-      {/* HERO */}
+   {/* */}
       <section className="relative mx-auto mt-8 max-w-6xl px-4 pt-12 sm:pt-20">
         {/* Floating Visual */}
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
