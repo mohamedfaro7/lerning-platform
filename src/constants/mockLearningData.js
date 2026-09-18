@@ -656,3 +656,86 @@ export const getGroupCollected = (groupId) => {
   const payments = MOCK_PAYMENTS.filter((p) => p.groupId === groupId);
   return payments.reduce((sum, p) => sum + p.paidAmount, 0);
 };
+// ═══════════════════════════════════════════════════════════
+//   تقييمات المدرّس للطلاب (Instructor → Student Ratings)
+// ═══════════════════════════════════════════════════════════
+
+const RATING_COMMENTS = [
+  "طالب مجتهد ومتفاعل، استمر",
+  "أداء جيد، لكن يحتاج مزيد من التركيز في الواجبات",
+  "تحسن ملحوظ خلال الفترة الأخيرة",
+  "ممتاز، من أفضل الطلاب في الجروب",
+  "حضوره منتظم لكن يحتاج تفاعل أكثر في الحصص",
+  "طالب موهوب، أنصحه بالمزيد من التدريب",
+  "التزام جيد، لكن يمكن تحسين المشاركة",
+  "أداء متميز، بالتوفيق",
+];
+
+// توليد تقييمات وهمية (٧٠٪ من الطلاب مقيّمين)
+export const MOCK_STUDENT_RATINGS = (() => {
+  const ratings = [];
+  let ratingIndex = 0;
+
+  MOCK_STUDENTS.forEach((student, index) => {
+    // ٧٠٪ من الطلاب عندهم تقييم
+    if (index % 10 < 7) {
+      ratingIndex++;
+      const group = MOCK_GROUPS.find((g) => g.id === student.groupId);
+      const rating = 3 + (index % 3); // 3-5 عشان يبان واقعي
+      const attendance = 60 + ((index * 7) % 40); // 60-100%
+      const performance = 3 + ((index * 3) % 3); // 3-5
+
+      ratings.push({
+        id: `sr_${String(ratingIndex).padStart(3, "0")}`,
+        studentId: student.id,
+        instructorId: group?.instructorId,
+        groupId: student.groupId,
+        overallRating: rating,
+        attendance,
+        performance,
+        comment: RATING_COMMENTS[index % RATING_COMMENTS.length],
+        createdAt: student.joinedAt,
+      });
+    }
+  });
+
+  return ratings;
+})();
+
+// ═══════════════════════════════════════════════════════════
+//   Helper Functions لتقييمات الطلاب
+// ═══════════════════════════════════════════════════════════
+
+// جلب تقييم طالب في جروب معين
+export const getStudentRating = (studentId, groupId) =>
+  MOCK_STUDENT_RATINGS.find(
+    (r) => r.studentId === studentId && r.groupId === groupId
+  );
+
+// جلب كل تقييمات مدرّس
+export const getRatingsByInstructor = (instructorId) =>
+  MOCK_STUDENT_RATINGS.filter((r) => r.instructorId === instructorId);
+
+// متوسط التقييم العام لمدرّس
+export const getInstructorStudentsAvg = (instructorId) => {
+  const ratings = getRatingsByInstructor(instructorId);
+  if (ratings.length === 0) return 0;
+  const sum = ratings.reduce((s, r) => s + r.overallRating, 0);
+  return Number((sum / ratings.length).toFixed(1));
+};
+
+// متوسط الحضور لمدرّس
+export const getInstructorAttendanceAvg = (instructorId) => {
+  const ratings = getRatingsByInstructor(instructorId);
+  if (ratings.length === 0) return 0;
+  const sum = ratings.reduce((s, r) => s + r.attendance, 0);
+  return Math.round(sum / ratings.length);
+};
+
+// متوسط أداء الواجبات لمدرّس
+export const getInstructorPerformanceAvg = (instructorId) => {
+  const ratings = getRatingsByInstructor(instructorId);
+  if (ratings.length === 0) return 0;
+  const sum = ratings.reduce((s, r) => s + r.performance, 0);
+  return Number((sum / ratings.length).toFixed(1));
+};

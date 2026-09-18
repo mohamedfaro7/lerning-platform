@@ -20,6 +20,8 @@ import ReviewQueue from "./pages/jobs/ReviewQueue";
 import TracksAndJobs from "./pages/jobs/TracksAndJobs";
 import Analytics from "./pages/jobs/Analytics";
 
+import RateStudents from "./pages/jobs/RateStudents";
+
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
 
@@ -47,6 +49,7 @@ function AppContent() {
           <Route path="/jobs/review-queue" element={<ReviewQueue />} />
           <Route path="/jobs/tracks-profiles" element={<TracksAndJobs />} />
           <Route path="/jobs/analytics" element={<Analytics />} />
+          <Route path="/instructor/rate-students" element={<RateStudents />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

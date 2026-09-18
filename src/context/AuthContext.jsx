@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
   }, [applications]);
 
   // ========== Auth Functions ==========
-  const login = (email, password, role = "applicant", phone = "", idNumber = "") => {
+  const login = (email, password, role = "student", phone = "", idNumber = "") => {
     const newUser = {
       name: email.split("@")[0],
       email,
@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
     setUser(newUser);
   };
 
-  const register = (name, email, password, phone = "", idNumber = "", role = "applicant") => {
+  const register = (name, email, password, phone = "", idNumber = "", role = "student") => {
     const newUser = {
       name,
       email,

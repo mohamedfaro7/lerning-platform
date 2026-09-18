@@ -13,7 +13,7 @@ import {
   UserIcon,
    TableCellsIcon ,
   Squares2X2Icon ,
-  ChartBarIcon// 👈 تم إضافة الأيقونة
+  ChartBarIcon // 👈 تم إضافة الأيقونة
 } from "@heroicons/react/24/outline";
 import ThemeToggle from "../ThemeToggle";
 import AnimatedGridBackground from "../AnimatedGridBackground";
