@@ -10,6 +10,7 @@ import {
   UserGroupIcon,
   ArrowLeftIcon,
   ChartBarIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import {
   CURRENCY,
@@ -23,7 +24,21 @@ import InstructorDetail from "../../component/common/TracksAndJobs/InstructorDet
 //   Sub-Components
 // ═══════════════════════════════════════════════════════════
 
-/** Single KPI Metric Card */
+function SearchInput({ value, onChange, placeholder }) {
+  return (
+    <div className="relative min-w-[200px] max-w-md flex-1">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-slate-800 bg-slate-900/80 py-2.5 px-4 pl-10 text-sm text-white placeholder-slate-500 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+      />
+      <MagnifyingGlassIcon className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+    </div>
+  );
+}
+
 function StatCard({ icon: Icon, label, value, unit = "", color, delay = 0 }) {
   return (
     <motion.div
@@ -55,7 +70,6 @@ function StatCard({ icon: Icon, label, value, unit = "", color, delay = 0 }) {
   );
 }
 
-/** Summary Info Strip */
 function InfoStrip({ courses, instructors, groups }) {
   const items = [
     { icon: BookOpenIcon, value: courses, label: "كورس" },
@@ -86,7 +100,6 @@ function InfoStrip({ courses, instructors, groups }) {
   );
 }
 
-/** Instructor Card Trigger Component */
 function InstructorCard({ instructor, onSelect }) {
   const groups = getGroupsByInstructor(instructor.id);
   const totalStudents = groups.reduce((sum, g) => sum + g.enrolled, 0);
@@ -100,12 +113,10 @@ function InstructorCard({ instructor, onSelect }) {
       className="group w-full text-right cursor-pointer rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-xl transition-all hover:border-indigo-500/50 hover:bg-slate-900 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
     >
       <div className="flex items-start gap-4">
-        {/* Avatar */}
         <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-xl font-bold text-indigo-400 border border-indigo-500/30">
           {instructor.avatar}
         </div>
 
-        {/* Details */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
@@ -119,7 +130,6 @@ function InstructorCard({ instructor, onSelect }) {
             <ArrowLeftIcon className="h-5 w-5 flex-shrink-0 text-slate-600 transition-transform group-hover:-translate-x-1 group-hover:text-indigo-400" />
           </div>
 
-          {/* Rating */}
           <div className="mt-2">
             <StarRating
               rating={instructor.rating}
@@ -127,7 +137,6 @@ function InstructorCard({ instructor, onSelect }) {
             />
           </div>
 
-          {/* Group Stats */}
           <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-400">
             <span>{groups.length} جروب</span>
             <span className="text-slate-700" aria-hidden="true">
@@ -148,31 +157,89 @@ export default function Analytics() {
   const [activeTab, setActiveTab] = useState("general");
   const [selectedInstructor, setSelectedInstructor] = useState(null);
 
+  // Search & Filter States
+  const [instructorQuery, setInstructorQuery] = useState("");
+  const [groupQuery, setGroupQuery] = useState("");
+  // Options: 'all' | 'active' | 'not_full' | 'not_started'
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [studentQuery, setStudentQuery] = useState("");
+
   const tabs = [
     { id: "general", label: "نظرة عامة", icon: "📊" },
     { id: "english", label: "English", icon: "🇬🇧" },
     { id: "programming", label: "Programming", icon: "💻" },
   ];
 
-  // Dynamically compute stats according to selected section
   const stats = useMemo(() => {
     return getStats(activeTab === "general" ? null : activeTab);
   }, [activeTab]);
 
-  // Filter instructors based on section tab selection
+  // Filtered Instructors
   const filteredInstructors = useMemo(() => {
-    if (activeTab === "general") return stats.instructors;
-    return stats.instructors.filter((i) => i.sectionId === activeTab);
-  }, [stats.instructors, activeTab]);
+    let list =
+      activeTab === "general"
+        ? stats.instructors
+        : stats.instructors.filter((i) => i.sectionId === activeTab);
+
+    if (instructorQuery.trim()) {
+      const q = instructorQuery.toLowerCase();
+      list = list.filter(
+        (i) =>
+          i.name.toLowerCase().includes(q) ||
+          i.specialty.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [stats.instructors, activeTab, instructorQuery]);
+
+  // Filtered Groups
+  const filteredGroups = useMemo(() => {
+    let list = stats.groups || [];
+
+    if (groupQuery.trim()) {
+      const q = groupQuery.toLowerCase();
+      list = list.filter(
+        (g) =>
+          g.name.toLowerCase().includes(q) ||
+          g.courseName?.toLowerCase().includes(q)
+      );
+    }
+
+    if (groupFilter === "active") {
+      list = list.filter(
+        (g) => g.status === "active" || g.isStarted === true
+      );
+    } else if (groupFilter === "not_full") {
+      list = list.filter((g) => g.enrolled < (g.maxCapacity || 20));
+    } else if (groupFilter === "not_started") {
+      list = list.filter(
+        (g) => g.status === "upcoming" || g.isStarted === false
+      );
+    }
+
+    return list;
+  }, [stats.groups, groupQuery, groupFilter]);
+
+  // Filtered Students
+  const filteredStudents = useMemo(() => {
+    let list = stats.students || [];
+
+    if (studentQuery.trim()) {
+      const q = studentQuery.toLowerCase();
+      list = list.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.email?.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [stats.students, studentQuery]);
 
   return (
-    <div
-      className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 sm:px-6"
-      dir="rtl"
-    >
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 sm:px-6" dir="rtl">
+      <div className="mx-auto max-w-7xl space-y-8">
         {/* Header */}
-        <header className="mb-6">
+        <header>
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-950/50 px-4 py-1.5 text-xs font-semibold text-indigo-300">
             <ChartBarIcon className="h-4 w-4" />
             لوحة التحليلات
@@ -181,15 +248,12 @@ export default function Analytics() {
             إحصائيات <span className="text-indigo-400">المنصة</span>
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            نظرة شاملة على أداء المنصة، المدرسين، والإيرادات.
+            نظرة شاملة على أداء المنصة، المدرسين، والجروبات والطلاب.
           </p>
         </header>
 
         {/* Section Tabs */}
-        <nav
-          className="mb-6 flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-900/60 p-1.5 backdrop-blur-xl"
-          aria-label="قسم التحليلات"
-        >
+        <nav className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-900/60 p-1.5 backdrop-blur-xl">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -262,15 +326,22 @@ export default function Analytics() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Instructor Directory */}
-        <section className="mt-8">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">
-              المدرسين{" "}
+        {/* Instructors Directory */}
+        <section className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <AcademicCapIcon className="h-5 w-5 text-indigo-400" />
+              المدرسين
               <span className="text-sm font-normal text-slate-500">
                 ({filteredInstructors.length})
               </span>
             </h2>
+
+            <SearchInput
+              value={instructorQuery}
+              onChange={setInstructorQuery}
+              placeholder="ابحث باسم المدرس أو التخصص..."
+            />
           </div>
 
           {filteredInstructors.length > 0 ? (
@@ -284,8 +355,199 @@ export default function Analytics() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-12 text-center backdrop-blur-xl">
-              <p className="text-slate-400">لا يوجد مدرسين في هذا القسم.</p>
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center">
+              <p className="text-slate-400">لا يوجد مدرسين يطابقون البحث.</p>
+            </div>
+          )}
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* GROUPS MANAGEMENT SECTION WITH ACTIVE FILTER */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 backdrop-blur-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <UserGroupIcon className="h-5 w-5 text-emerald-400" />
+                الجروبات المتاحة
+                <span className="text-sm font-normal text-slate-500">
+                  ({filteredGroups.length})
+                </span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                متابعة سعة الجروبات المتاحة والنشطة
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Filter Tabs with "النشطة" (Active) */}
+              <div className="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-950/60 p-1">
+                {[
+                  { id: "all", label: "الكل" },
+                  { id: "active", label: "النشطة" },
+                  { id: "not_full", label: "لم تكتمل" },
+                  { id: "not_started", label: "لم تبدأ" },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setGroupFilter(f.id)}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                      groupFilter === f.id
+                        ? "bg-indigo-600 text-white"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search Field */}
+              <SearchInput
+                value={groupQuery}
+                onChange={setGroupQuery}
+                placeholder="ابحث باسم الجروب..."
+              />
+            </div>
+          </div>
+
+          {/* Groups Grid Display */}
+          {filteredGroups.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredGroups.map((group) => {
+                const maxCap = group.maxCapacity || 20;
+                const isFull = group.enrolled >= maxCap;
+                const isActive = group.status === "active" || group.isStarted;
+
+                return (
+                  <div
+                    key={group.id}
+                    className="rounded-xl border border-slate-800/80 bg-slate-950/50 p-4 transition hover:border-slate-700"
+                  >
+                    <div className="flex justify-between items-start gap-2">
+                      <h4 className="font-bold text-white text-sm truncate">
+                        {group.name}
+                      </h4>
+                      <div className="flex items-center gap-1">
+                        {isActive && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            نشط
+                          </span>
+                        )}
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            isFull
+                              ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                              : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                          }`}
+                        >
+                          {isFull ? "مكتمل" : "متاح"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-400 mt-1">
+                      {group.instructorName || "مدرس الجروب"}
+                    </p>
+
+                    <div className="mt-3 space-y-1.5">
+                      <div className="flex justify-between text-xs text-slate-400">
+                        <span>
+                          الأعضاء: {group.enrolled}/{maxCap}
+                        </span>
+                        <span>
+                          {Math.round((group.enrolled / maxCap) * 100)}%
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-indigo-500 transition-all duration-300"
+                          style={{
+                            width: `${(group.enrolled / maxCap) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-6 text-center text-slate-500 text-sm">
+              لا توجد جروبات مطابقة للفلتر المحدد.
+            </div>
+          )}
+        </section>
+
+        {/* Students Search & Directory */}
+        <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 backdrop-blur-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <UsersIcon className="h-5 w-5 text-blue-400" />
+                سجل الطلاب والاشتراكات
+                <span className="text-sm font-normal text-slate-500">
+                  ({filteredStudents.length})
+                </span>
+              </h2>
+            </div>
+
+            <SearchInput
+              value={studentQuery}
+              onChange={setStudentQuery}
+              placeholder="ابحث باسم الطالب أو البريد..."
+            />
+          </div>
+
+          {filteredStudents.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-sm text-slate-300">
+                <thead className="bg-slate-950/60 text-xs text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th className="p-3">الطالب</th>
+                    <th className="p-3">الجروبات والمسارات</th>
+                    <th className="p-3">حالة الدفع</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/50">
+                  {filteredStudents.map((student) => (
+                    <tr key={student.id} className="hover:bg-slate-800/30">
+                      <td className="p-3 font-semibold text-white">
+                        {student.name}
+                      </td>
+                      <td className="p-3">
+                        <div className="flex flex-wrap gap-1">
+                          {student.groups?.map((g, idx) => (
+                            <span
+                              key={idx}
+                              className="bg-indigo-950/60 border border-indigo-800/50 text-indigo-300 text-[11px] px-2 py-0.5 rounded"
+                            >
+                              {g}
+                            </span>
+                          )) || "غير مسجل"}
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <span
+                          className={`text-xs px-2 py-1 rounded-md font-medium ${
+                            student.hasPendingDebt
+                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                              : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          }`}
+                        >
+                          {student.hasPendingDebt
+                            ? "عليها متبقي"
+                            : "مكتمل السداد"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="p-6 text-center text-slate-500 text-sm">
+              لا يوجد طلاب مطابقين للبحث.
             </div>
           )}
         </section>
