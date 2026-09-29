@@ -571,7 +571,7 @@ export const getStudentsBySection = (sectionId) => {
 
 // ⭐ دالة واحدة تجيب كل الإحصائيات (للمنصة كلها أو قسم معين)
 export const getStats = (sectionId = null) => {
-  // لو sectionId = null، يبقى General (كل المنصة)
+  // ─── جلب الكيانات الأساسية ───
   const instructors = sectionId
     ? getInstructorsBySection(sectionId)
     : MOCK_INSTRUCTORS;
@@ -588,15 +588,16 @@ export const getStats = (sectionId = null) => {
     ? getStudentsBySection(sectionId)
     : MOCK_STUDENTS;
 
-  // المدفوعات
+  // ─── المدفوعات المرتبطة بالجروبات ───
+  const groupIds = groups.map((g) => g.id);
   const payments = MOCK_PAYMENTS.filter((p) =>
-    groups.some((g) => g.id === p.groupId)
+    groupIds.includes(p.groupId)
   );
 
   const collected = payments.reduce((sum, p) => sum + p.paidAmount, 0);
   const pending = payments.reduce((sum, p) => sum + p.dueAmount, 0);
 
-  // التقييم
+  // ─── التقييم ───
   const instructorIds = instructors.map((i) => i.id);
   const feedbacks = MOCK_FEEDBACK.filter((f) =>
     instructorIds.includes(f.instructorId)
@@ -610,7 +611,45 @@ export const getStats = (sectionId = null) => {
         )
       : 0;
 
+  // ═══════════════════════════════════════════════════════════
+  // ⭐ إثراء الجروبات ببيانات إضافية (للعرض في Analytics)
+  // ═══════════════════════════════════════════════════════════
+  const enrichedGroups = groups.map((g) => {
+    const instructor = MOCK_INSTRUCTORS.find((i) => i.id === g.instructorId);
+    const course = MOCK_COURSES.find((c) => c.id === g.courseId);
+    return {
+      ...g,
+      name: g.nameAr || g.name,                      // الاسم العربي
+      maxCapacity: g.capacity,                        // توحيد الاسم
+      instructorName: instructor?.name || "—",        // اسم المدرّس
+      courseName: course?.titleAr || course?.title || "—", // اسم الكورس
+      isStarted: g.status === "active",               // هل بدأ؟
+    };
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // ⭐ إثراء الطلاب ببيانات إضافية (للعرض في Analytics)
+  // ═══════════════════════════════════════════════════════════
+  const enrichedStudents = students.map((s) => {
+    // جروبات الطالب (لو الطالب في أكتر من جروب)
+    const studentGroups = groups
+      .filter((g) => g.id === s.groupId)
+      .map((g) => g.nameAr || g.name);
+
+    // حالة الدفع
+    const payment = MOCK_PAYMENTS.find((p) => p.studentId === s.id);
+    const hasPendingDebt = payment ? payment.dueAmount > 0 : false;
+
+    return {
+      ...s,
+      groups: studentGroups,
+      hasPendingDebt,
+    };
+  });
+
+  // ─── الإرجاع ───
   return {
+    // KPIs (أرقام)
     totalStudents: students.length,
     totalInstructors: instructors.length,
     totalCourses: courses.length,
@@ -618,7 +657,11 @@ export const getStats = (sectionId = null) => {
     collected,
     pending,
     avgRating,
+
+    // Data Lists (للأقسام التفصيلية)
     instructors,
+    groups: enrichedGroups,
+    students: enrichedStudents,
   };
 };
 // ═══════════════════════════════════════════════════════════
