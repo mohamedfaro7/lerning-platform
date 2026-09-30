@@ -19,7 +19,13 @@ import {
 } from "../../constants/mockLearningData";
 import StarRating from "../../component/common/StarRating";
 import InstructorDetail from "../../component/common/TracksAndJobs/InstructorDetail";
-
+import StudentsDonutChart from "../../component/common/charts/StudentsDonutChart";
+import RevenueBarChart from "../../component/common/charts/RevenueBarChart";
+import GrowthLineChart from "../../component/common/charts/GrowthLineChart";
+import {
+  getChartData,
+  MOCK_GROWTH_DATA,
+} from "../../constants/mockLearningData";
 // ═══════════════════════════════════════════════════════════
 //   Sub-Components
 // ═══════════════════════════════════════════════════════════
@@ -156,6 +162,8 @@ function InstructorCard({ instructor, onSelect }) {
 export default function Analytics() {
   const [activeTab, setActiveTab] = useState("general");
   const [selectedInstructor, setSelectedInstructor] = useState(null);
+  // بعد stats
+const chartData = useMemo(() => getChartData(), []);
 
   // Search & Filter States
   const [instructorQuery, setInstructorQuery] = useState("");
@@ -323,6 +331,24 @@ export default function Analytics() {
               instructors={stats.totalInstructors}
               groups={stats.totalGroups}
             />
+            {/* ═══ Charts Section (تظهر فقط في التاب العام) ═══ */}
+{activeTab === "general" && (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.25 }}
+    className="grid gap-4 lg:grid-cols-2"
+  >
+    <StudentsDonutChart data={chartData.studentsDistribution} />
+    <RevenueBarChart
+      data={chartData.revenueBySection}
+      currencySymbol={CURRENCY.symbol}
+    />
+    <div className="lg:col-span-2">
+      <GrowthLineChart data={MOCK_GROWTH_DATA} />
+    </div>
+  </motion.div>
+)}
           </motion.div>
         </AnimatePresence>
 

@@ -782,3 +782,34 @@ export const getInstructorPerformanceAvg = (instructorId) => {
   const sum = ratings.reduce((s, r) => s + r.performance, 0);
   return Number((sum / ratings.length).toFixed(1));
 };
+// ═══════════════════════════════════════════════════════════
+//   بيانات النمو الشهري (لـ Charts)
+// ═══════════════════════════════════════════════════════════
+export const MOCK_GROWTH_DATA = [
+  { month: "أغسطس", students: 18 },
+  { month: "سبتمبر", students: 32 },
+  { month: "أكتوبر", students: 56 },
+  { month: "نوفمبر", students: 89 },
+  { month: "ديسمبر", students: 125 },
+];
+
+// ═══════════════════════════════════════════════════════════
+//   دالة لتحضير بيانات الـ Charts من `getStats`
+// ═══════════════════════════════════════════════════════════
+export const getChartData = () => {
+  const englishStats = getStats("english");
+  const programmingStats = getStats("programming");
+
+  return {
+    // Donut Chart (توزيع الطلاب)
+    studentsDistribution: [
+      { name: "English", value: englishStats.totalStudents },
+      { name: "Programming", value: programmingStats.totalStudents },
+    ],
+    // Bar Chart (الإيرادات)
+    revenueBySection: [
+      { name: "English", value: englishStats.collected },
+      { name: "Programming", value: programmingStats.collected },
+    ],
+  };
+};
