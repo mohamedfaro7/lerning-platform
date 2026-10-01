@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AcademicCapIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
@@ -10,14 +10,19 @@ import Button from "../component/common/Button";
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // ⭐ الرابط اللي المستخدم عايز يرجع له بعد تسجيل الدخول
+  const returnTo = location.state?.returnTo || "/";
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) return;
     login(email, password, "student");
-    navigate("/");
+    // ⭐ يرجع للمكان اللي جاء منه
+    navigate(returnTo, { replace: true });
   };
 
   return (
@@ -52,7 +57,13 @@ export default function Login() {
           <div className="mt-4 flex flex-col gap-2 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
             <p>
               ليس لديك حساب؟{" "}
-              <Link to="/register" className="font-semibold hover:underline" style={{ color: "var(--accent-text)" }}>
+              {/* ⭐ نمرر returnTo عشان يوصل لصفحة التسجيل */}
+              <Link
+                to="/register"
+                state={{ returnTo }}
+                className="font-semibold hover:underline"
+                style={{ color: "var(--accent-text)" }}
+              >
                 سجّل الآن
               </Link>
             </p>

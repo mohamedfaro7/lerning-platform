@@ -19,8 +19,8 @@ import ApprovedMatrix from "./pages/jobs/ApprovedMatrix";
 import ReviewQueue from "./pages/jobs/ReviewQueue";
 import TracksAndJobs from "./pages/jobs/TracksAndJobs";
 import Analytics from "./pages/jobs/Analytics";
-
 import RateStudents from "./pages/jobs/RateStudents";
+import CourseDetail from "./pages/CourseDetail";
 
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
@@ -35,6 +35,7 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
         </Route>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />

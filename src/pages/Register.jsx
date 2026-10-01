@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AcademicCapIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
@@ -10,7 +10,11 @@ import AnimatedGridBackground from "../component/common/AnimatedGridBackground";
 export default function Register() {
   const { register, pendingApplication } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+
+  // ⭐ الرابط اللي المستخدم عايز يرجع له بعد التسجيل
+  const returnTo = location.state?.returnTo || "/";
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -19,12 +23,20 @@ export default function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password) return;
-    register(form.name, form.email, form.password, "applicant");
-    if (pendingApplication) {
-      navigate("/apply");
-    } else {
-      navigate("/");
+    register(form.name, form.email, form.password, "student");
+
+    // ⭐ تحديد الوجهة النهائية:
+    // 1. لو جاي من صفحة معينة (زي كورس) → يروح لها
+    // 2. لو عنده طلب وظيفة معلق → يروح لصفحة التقديم
+    // 3. الافتراضي → الرئيسية
+    let destination = "/";
+    if (returnTo !== "/") {
+      destination = returnTo;
+    } else if (pendingApplication) {
+      destination = "/apply";
     }
+
+    navigate(destination, { replace: true });
   };
 
   return (
@@ -64,7 +76,13 @@ export default function Register() {
 
           <p className="mt-4 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
             لديك حساب بالفعل؟{" "}
-            <Link to="/login" className="font-semibold hover:underline" style={{ color: "var(--accent-text)" }}>
+            {/* ⭐ نمرر returnTo عشان لو رجع لتسجيل الدخول */}
+            <Link
+              to="/login"
+              state={{ returnTo }}
+              className="font-semibold hover:underline"
+              style={{ color: "var(--accent-text)" }}
+            >
               سجّل دخولك
             </Link>
           </p>
