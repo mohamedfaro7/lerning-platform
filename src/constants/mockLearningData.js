@@ -50,6 +50,8 @@ export const MOCK_INSTRUCTORS = [
     status: "active",
     rating: 4.7,
     ratingCount: 45,
+     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",  // فيديو تعريفي
+  teachingSkills: ["IELTS", "TOEFL", "Business English", "Conversation"],
   },
   {
     id: "inst_002",
@@ -65,6 +67,9 @@ export const MOCK_INSTRUCTORS = [
     status: "active",
     rating: 4.9,
     ratingCount: 62,
+     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    teachingSkills: ["Business English", "Presentations", "Negotiations"],
+
   },
   {
     id: "inst_003",
@@ -80,6 +85,8 @@ export const MOCK_INSTRUCTORS = [
     status: "active",
     rating: 4.5,
     ratingCount: 28,
+     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  teachingSkills: ["Business English", "Presentations", "Negotiations"],
   },
 
   // ── قسم Programming ──
@@ -97,6 +104,8 @@ export const MOCK_INSTRUCTORS = [
     status: "active",
     rating: 4.8,
     ratingCount: 71,
+  videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  teachingSkills: ["React", "Node.js", "MongoDB", "REST APIs"],
   },
   {
     id: "inst_005",
@@ -112,6 +121,8 @@ export const MOCK_INSTRUCTORS = [
     status: "active",
     rating: 4.6,
     ratingCount: 39,
+  videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  teachingSkills: ["Python", "Data Science", "Machine Learning", "Pandas"],
   },
   {
     id: "inst_006",
@@ -127,6 +138,8 @@ export const MOCK_INSTRUCTORS = [
     status: "active",
     rating: 4.7,
     ratingCount: 52,
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    teachingSkills: ["React", "UI/UX", "Tailwind CSS", "Figma"],
   },
 ];
 
@@ -233,7 +246,19 @@ export const MOCK_GROUPS = [
     price: 1500,
     schedule: "السبت والاثنين 6:00 مساءً",
     startedAt: "2024-10-01",
-    status: "active", // active | completed | cancelled
+
+     // ⭐ جديد
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "starting_soon",   
   },
   {
     id: "grp_002",
@@ -246,7 +271,18 @@ export const MOCK_GROUPS = [
     price: 1500,
     schedule: "الأحد والثلاثاء 7:00 مساءً",
     startedAt: "2024-11-05",
-    status: "active",
+     // ⭐ جديد
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "upcoming",   
   },
 
   // ── جروبات سارة علي (inst_002 - Business English) ──
@@ -261,7 +297,18 @@ export const MOCK_GROUPS = [
     price: 1200,
     schedule: "السبت والاثنين والأربعاء 10:00 صباحاً",
     startedAt: "2024-09-15",
-    status: "active",
+    // ⭐ جديد
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "active"
   },
   {
     id: "grp_004",
@@ -274,7 +321,18 @@ export const MOCK_GROUPS = [
     price: 1200,
     schedule: "الأحد والثلاثاء 8:00 مساءً",
     startedAt: "2024-10-20",
-    status: "active",
+    // ⭐ جديد
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "upcoming"
   },
 
   // ── جروبات منى إبراهيم (inst_003 - Grammar) ──
@@ -289,7 +347,17 @@ export const MOCK_GROUPS = [
     price: 800,
     schedule: "الجمعة 4:00 مساءً",
     startedAt: "2024-11-01",
-    status: "active",
+    startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "active", 
   },
 
   // ── جروبات خالد حسن (inst_004 - Full Stack) ──
@@ -304,7 +372,17 @@ export const MOCK_GROUPS = [
     price: 2500,
     schedule: "السبت والاثنين والأربعاء 6:00 مساءً",
     startedAt: "2024-09-01",
-    status: "active",
+   startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "upcoming", 
   },
   {
     id: "grp_007",
@@ -317,7 +395,17 @@ export const MOCK_GROUPS = [
     price: 2500,
     schedule: "الأحد والثلاثاء والخميس 7:00 مساءً",
     startedAt: "2024-10-15",
-    status: "active",
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "starting_soon", 
   },
   {
     id: "grp_008",
@@ -330,7 +418,17 @@ export const MOCK_GROUPS = [
     price: 3000,
     schedule: "الجمعة والسبت 10:00 صباحاً",
     startedAt: "2024-11-10",
-    status: "active",
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "upcoming", 
   },
 
   // ── جروبات يوسف سعيد (inst_005 - Python) ──
@@ -345,7 +443,17 @@ export const MOCK_GROUPS = [
     price: 2000,
     schedule: "السبت والاثنين 8:00 مساءً",
     startedAt: "2024-10-05",
-    status: "active",
+   startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "active", 
   },
   {
     id: "grp_010",
@@ -358,7 +466,17 @@ export const MOCK_GROUPS = [
     price: 2000,
     schedule: "الأحد والثلاثاء 9:00 مساءً",
     startedAt: "2024-11-15",
-    status: "active",
+   startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "upcoming", 
   },
 
   // ── جروبات ليلى كمال (inst_006 - React) ──
@@ -373,7 +491,17 @@ export const MOCK_GROUPS = [
     price: 1800,
     schedule: "السبت والاثنين 7:00 مساءً",
     startedAt: "2024-09-20",
-    status: "active",
+   startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "active", 
   },
   {
     id: "grp_012",
@@ -386,7 +514,17 @@ export const MOCK_GROUPS = [
     price: 1800,
     schedule: "الأحد والثلاثاء 6:00 مساءً",
     startedAt: "2024-10-25",
-    status: "active",
+  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
+  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
+  startTime: "18:00",                         // 6:00 مساءً
+  endTime: "22:00",                           // 10:00 مساءً
+  participants: [                             // الطلاب المسجلين
+    "std_001", "std_002", "std_003", "std_004",
+    "std_005", "std_006", "std_007", "std_008",
+    "std_009", "std_010", "std_011", "std_012",
+    "std_013", "std_014",
+  ],
+  status: "upcoming", 
   },
 ];
 // ═══════════════════════════════════════════════════════════
@@ -812,4 +950,84 @@ export const getChartData = () => {
       { name: "Programming", value: programmingStats.collected },
     ],
   };
+};
+// ═══════════════════════════════════════════════════════════
+//   التسجيلات (Enrollments)
+//   كل تسجيل يربط طالب بجروب ودفعة
+// ═══════════════════════════════════════════════════════════
+export const MOCK_ENROLLMENTS = [
+  // ⭐ أمثلة (لو حابب تبدأ ببيانات موجودة)
+  // {
+  //   id: "enr_001",
+  //   studentId: "std_001",
+  //   groupId: "grp_001",
+  //   courseId: "course_001",
+  //   instructorId: "inst_001",
+  //   enrolledAt: "2025-10-01",
+  //   status: "active",              // active | pending | completed | cancelled
+  //   paymentPlan: "installments",   // full | installments
+  //   totalAmount: 1500,
+  //   paidAmount: 750,
+  //   dueAmount: 750,
+  //   nextPaymentDate: "2025-11-15",
+  //   payments: [
+  //     { amount: 750, date: "2025-10-01", method: "card" },
+  //   ],
+  // },
+];
+// ═══════════════════════════════════════════════════════════
+//   دوال مساعدة - Student Flow
+// ═══════════════════════════════════════════════════════════
+
+// ⭐ جلب كل المدرّسين اللي بيدرّسوا كورس معين
+// (بناءً على الجروبات الموجودة للكورس)
+export const getInstructorsByCourse = (courseId) => {
+  const groups = MOCK_GROUPS.filter((g) => g.courseId === courseId);
+  const instructorIds = [...new Set(groups.map((g) => g.instructorId))];
+  return instructorIds.map((id) =>
+    MOCK_INSTRUCTORS.find((i) => i.id === id)
+  ).filter(Boolean);
+};
+
+// ⭐ جلب كل الجروبات لكورس معين
+export const getGroupsByCourse = (courseId) =>
+  MOCK_GROUPS.filter((g) => g.courseId === courseId);
+
+// ⭐ جلب جروبات مدرّس معين في كورس معين
+export const getGroupsByInstructorAndCourse = (instructorId, courseId) =>
+  MOCK_GROUPS.filter(
+    (g) => g.instructorId === instructorId && g.courseId === courseId
+  );
+
+// ⭐ جلب تسجيلات طالب
+export const getEnrollmentsByStudent = (studentId) =>
+  MOCK_ENROLLMENTS.filter((e) => e.studentId === studentId);
+
+// ⭐ جلب تسجيل محدد
+export const getEnrollmentById = (enrollmentId) =>
+  MOCK_ENROLLMENTS.find((e) => e.id === enrollmentId);
+
+// ⭐ تصنيف الجروبات حسب الحالة (للـ UI)
+export const categorizeGroups = (groups) => {
+  const upcoming = groups.filter(
+    (g) => g.status === "upcoming" || g.status === "starting_soon"
+  );
+  const active = groups.filter((g) => g.status === "active");
+  return { upcoming, active };
+};
+
+// ⭐ الأماكن الفاضية في جروب
+export const getAvailableSpots = (group) =>
+  group.capacity - group.enrolled;
+
+// ⭐ التحقق إن الجروب متاح للتسجيل
+export const isGroupAvailable = (group) =>
+  group.status !== "completed" && getAvailableSpots(group) > 0;
+
+// ⭐ جلب أسماء الطلاب في جروب
+export const getParticipantsNames = (group) => {
+  return (group.participants || [])
+    .map((id) => MOCK_STUDENTS.find((s) => s.id === id))
+    .filter(Boolean)
+    .map((s) => s.name);
 };
