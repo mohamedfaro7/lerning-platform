@@ -261,29 +261,28 @@ export const MOCK_GROUPS = [
   status: "starting_soon",   
   },
   {
-    id: "grp_002",
-    instructorId: "inst_001",
-    courseId: "course_001",
-    name: "IELTS Group B",
-    nameAr: "مجموعة IELTS - ب",
-    capacity: 15,
-    enrolled: 8, // ← نصف ممتلئ (53%)
-    price: 1500,
-    schedule: "الأحد والثلاثاء 7:00 مساءً",
-    startedAt: "2024-11-05",
-     // ⭐ جديد
-  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
-  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
-  startTime: "18:00",                         // 6:00 مساءً
-  endTime: "22:00",                           // 10:00 مساءً
-  participants: [                             // الطلاب المسجلين
+  id: "grp_002",
+  instructorId: "inst_002",              // ⭐ سارة علي
+  courseId: "course_001",
+  name: "IELTS - Evening Group",
+  nameAr: "مجموعة IELTS - مسائي (سارة)",
+  capacity: 15,
+  enrolled: 8,
+  price: 1500,
+  schedule: "الأحد والثلاثاء 7:00 مساءً",
+  startedAt: "2024-11-05",
+  startDate: "2025-11-15",
+  days: ["الأحد", "الثلاثاء"],           // ⭐ تعديل الأيام
+  startTime: "19:00",
+  endTime: "21:00",
+  participants: [
     "std_001", "std_002", "std_003", "std_004",
     "std_005", "std_006", "std_007", "std_008",
     "std_009", "std_010", "std_011", "std_012",
     "std_013", "std_014",
   ],
-  status: "upcoming",   
-  },
+  status: "upcoming",
+},
 
   // ── جروبات سارة علي (inst_002 - Business English) ──
   {
@@ -311,29 +310,28 @@ export const MOCK_GROUPS = [
   status: "active"
   },
   {
-    id: "grp_004",
-    instructorId: "inst_002",
-    courseId: "course_002",
-    name: "Business English Evening",
-    nameAr: "إنجليزية الأعمال - مسائي",
-    capacity: 12,
-    enrolled: 7,
-    price: 1200,
-    schedule: "الأحد والثلاثاء 8:00 مساءً",
-    startedAt: "2024-10-20",
-    // ⭐ جديد
-  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
-  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
-  startTime: "18:00",                         // 6:00 مساءً
-  endTime: "22:00",                           // 10:00 مساءً
-  participants: [                             // الطلاب المسجلين
+  id: "grp_004",
+  instructorId: "inst_001",             // ⭐ أحمد محمد
+  courseId: "course_002",
+  name: "Business English - Intensive",
+  nameAr: "إنجليزية الأعمال - مكثّف (أحمد)",
+  capacity: 12,
+  enrolled: 7,
+  price: 1200,
+  schedule: "الأحد والثلاثاء 8:00 مساءً",
+  startedAt: "2024-10-20",
+  startDate: "2025-11-15",
+  days: ["الأحد", "الثلاثاء"],
+  startTime: "20:00",
+  endTime: "22:00",
+  participants: [
     "std_001", "std_002", "std_003", "std_004",
     "std_005", "std_006", "std_007", "std_008",
     "std_009", "std_010", "std_011", "std_012",
     "std_013", "std_014",
   ],
-  status: "upcoming"
-  },
+  status: "upcoming",
+},
 
   // ── جروبات منى إبراهيم (inst_003 - Grammar) ──
   {
@@ -408,28 +406,28 @@ export const MOCK_GROUPS = [
   status: "starting_soon", 
   },
   {
-    id: "grp_008",
-    instructorId: "inst_004",
-    courseId: "course_004",
-    name: "Full Stack - Advanced",
-    nameAr: "تطوير شامل - متقدم",
-    capacity: 10,
-    enrolled: 6,
-    price: 3000,
-    schedule: "الجمعة والسبت 10:00 صباحاً",
-    startedAt: "2024-11-10",
-  startDate: "2025-11-15",                    // تاريخ البدء المتوقع
-  days: ["السبت", "الاثنين"],                 // أيام الأسبوع
-  startTime: "18:00",                         // 6:00 مساءً
-  endTime: "22:00",                           // 10:00 مساءً
-  participants: [                             // الطلاب المسجلين
+  id: "grp_008",
+  instructorId: "inst_006",             // ⭐ ليلى كمال
+  courseId: "course_004",
+  name: "Full Stack - Modern UI Track",
+  nameAr: "تطوير شامل - مسار الواجهات (ليلى)",
+  capacity: 10,
+  enrolled: 6,
+  price: 3000,
+  schedule: "الجمعة والسبت 10:00 صباحاً",
+  startedAt: "2024-11-10",
+  startDate: "2025-11-15",
+  days: ["الجمعة", "السبت"],
+  startTime: "10:00",
+  endTime: "13:00",
+  participants: [
     "std_001", "std_002", "std_003", "std_004",
     "std_005", "std_006", "std_007", "std_008",
     "std_009", "std_010", "std_011", "std_012",
     "std_013", "std_014",
   ],
-  status: "upcoming", 
-  },
+  status: "upcoming",
+},
 
   // ── جروبات يوسف سعيد (inst_005 - Python) ──
   {
@@ -525,6 +523,25 @@ export const MOCK_GROUPS = [
     "std_013", "std_014",
   ],
   status: "upcoming", 
+  },
+    // ⭐ جروب جديد — منى إبراهيم في IELTS (مدرّسة تالتة للكورس)
+  {
+    id: "grp_013",
+    instructorId: "inst_003",              // ⭐ منى إبراهيم
+    courseId: "course_001",
+    name: "IELTS - Morning Intensive",
+    nameAr: "مجموعة IELTS - صباحي مكثّف (منى)",
+    capacity: 15,
+    enrolled: 3,
+    price: 1500,
+    schedule: "السبت والاثنين والأربعاء 10:00 صباحاً",
+    startedAt: "2024-11-20",
+    startDate: "2025-12-01",
+    days: ["السبت", "الاثنين", "الأربعاء"],
+    startTime: "10:00",
+    endTime: "13:00",
+    participants: ["std_001", "std_002", "std_003"],
+    status: "upcoming",
   },
 ];
 // ═══════════════════════════════════════════════════════════

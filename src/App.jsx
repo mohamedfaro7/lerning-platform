@@ -20,7 +20,13 @@ import ReviewQueue from "./pages/jobs/ReviewQueue";
 import TracksAndJobs from "./pages/jobs/TracksAndJobs";
 import Analytics from "./pages/jobs/Analytics";
 import RateStudents from "./pages/jobs/RateStudents";
-import CourseDetail from "./pages/CourseDetail";
+import CourseDetail from "./pages/student/CourseDetail";
+import InstructorSelection from "./pages/student/InstructorSelection";
+
+// ⭐ جديد — ضيفهم
+import GroupSelection from "./pages/student/GroupSelection";
+import Checkout from "./pages/student/Checkout";
+import StudentDashboard from "./pages/student/StudentDashboard";
 
 function AppContent() {
   const { isAuthModalOpen, closeAuthModal } = useAuth();
@@ -28,29 +34,51 @@ function AppContent() {
   return (
     <>
       <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
-      
+
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/courses" element={<Courses />} />
+
+          {/* ═══ Enrollment Flow ═══ */}
           <Route path="/courses/:id" element={<CourseDetail />} />
+          <Route
+            path="/courses/:id/instructors"
+            element={<InstructorSelection />}
+          />
+
+          {/* ⭐ جديد — الخطوة 3 */}
+          <Route
+            path="/courses/:id/instructors/:instructorId/groups"
+            element={<GroupSelection />}
+          />
+
+          {/* ⭐ جديد — الخطوة 4 */}
+          <Route
+            path="/courses/:id/checkout/:groupId"
+            element={<Checkout />}
+          />
+
+          {/* ⭐ جديد — لوحة الطالب (بعد الدفع) */}
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
         </Route>
+
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/staff-login" element={<StaffLogin />} />
         <Route path="/jobs/register" element={<JobsAuthScreen />} />
         <Route path="/jobs" element={<JobsLayout />} />
         <Route path="/track/:applicationId" element={<ApplicationTracker />} />
-        {/* المسارات الجديدة */}
-         <Route path="/profile/:id" element={<CandidatureProfile />} />
-          <Route path="/my-applications" element={<MyApplications />} />
-          <Route path="/jobs/approved-matrix" element={<ApprovedMatrix />} />
-          <Route path="/jobs/review-queue" element={<ReviewQueue />} />
-          <Route path="/jobs/tracks-profiles" element={<TracksAndJobs />} />
-          <Route path="/jobs/analytics" element={<Analytics />} />
-          <Route path="/instructor/rate-students" element={<RateStudents />} />
+        <Route path="/profile/:id" element={<CandidatureProfile />} />
+        <Route path="/my-applications" element={<MyApplications />} />
+        <Route path="/jobs/approved-matrix" element={<ApprovedMatrix />} />
+        <Route path="/jobs/review-queue" element={<ReviewQueue />} />
+        <Route path="/jobs/tracks-profiles" element={<TracksAndJobs />} />
+        <Route path="/jobs/analytics" element={<Analytics />} />
+        <Route path="/instructor/rate-students" element={<RateStudents />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
